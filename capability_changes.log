@@ -1,0 +1,1 @@
+{"action": "update_cert_level", "user": "kyle", "manufacturer": "TEKTRONIX", "model": "TDS3012", "changes": [{"manufacturer": "TEKTRONIX", "model_num": "TDS3012", "gage_descr": "OSCILLOSCOPE", "old_level": "LEVEL 2", "new_level": "LEVEL 1"}], "backup": "C:\\Users\\Kyle\\Projects\\Tescom\\backups\\tescom_equip_list.20250809-181838.json", "timestamp": "2025-08-09T23:18:38.325711Z"}

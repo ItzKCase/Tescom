@@ -1,0 +1,16 @@
+# Core LangGraph and LangChain dependencies
+langgraph==0.6.4
+langchain-core==0.3.74
+langchain-openai==0.3.29
+
+# Web UI framework
+gradio==5.42.0
+
+# Environment configuration
+python-dotenv==1.0.1
+
+# Core dependencies (automatically installed but pinned for stability)
+pydantic==2.11.7
+
+# Search functionality
+requests==2.32.4
