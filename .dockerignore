@@ -1,0 +1,44 @@
+# Version control
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.pytest_cache
+
+# Environment files (will be passed as env vars)
+.env
+.env.local
+.env.*.local
+
+# Development files
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Local development artifacts
+agent.log
+capability_changes.log
+
+# Backup files
+backups/
+
+# Documentation
+README.md
+*.md
+
+# Optional: Exclude test files if you don't want them in production
+test_*.py
+*_test.py

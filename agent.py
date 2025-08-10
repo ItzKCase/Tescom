@@ -22,13 +22,16 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 # Load environment variables
 load_dotenv()
 
-# Configure logging
+# Configure logging with Docker-friendly paths
+LOG_DIR = os.getenv('LOG_DIR', os.path.dirname(__file__))
+os.makedirs(LOG_DIR, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('agent.log', mode='a')
+        logging.FileHandler(os.path.join(LOG_DIR, 'agent.log'), mode='a')
     ]
 )
 logger = logging.getLogger(__name__)
@@ -528,8 +531,8 @@ def google_search(query: str) -> str:
 # Equipment capability tools
 ############################
 
-# Internal caches for equipment data (DB-backed)
-_DB_PATH = os.path.join(os.path.dirname(__file__), "equipment.db")
+# Internal caches for equipment data (DB-backed) - Docker-friendly
+_DB_PATH = os.getenv('DB_PATH', os.path.join(os.path.dirname(__file__), "equipment.db"))
 _ALIAS_TO_MANUFACTURER: Dict[str, str] = {}
 _MANUFACTURER_TO_MODELS: Dict[str, List[str]] = {}
 _MODEL_TO_RECORDS: Dict[str, List[Dict[str, Any]]] = {}
@@ -1305,7 +1308,7 @@ def _atomic_write_json(path: str, data: Any) -> None:
 def _backup_json(path: str) -> str:
     from datetime import datetime
     base_dir = os.path.dirname(path)
-    backups_dir = os.path.join(base_dir, "backups")
+    backups_dir = os.getenv('BACKUPS_DIR', os.path.join(base_dir, "backups"))
     os.makedirs(backups_dir, exist_ok=True)
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_path = os.path.join(backups_dir, f"tescom_equip_list.{ts}.json")
@@ -1318,7 +1321,7 @@ def _append_change_log(entry: Dict[str, Any]) -> None:
     from datetime import datetime
     entry = dict(entry)
     entry["timestamp"] = datetime.utcnow().isoformat() + "Z"
-    log_path = os.path.join(os.path.dirname(__file__), "capability_changes.log")
+    log_path = os.path.join(LOG_DIR, "capability_changes.log")
     line = json.dumps(entry, ensure_ascii=False)
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(line + "\n")
@@ -1670,7 +1673,11 @@ def _load_lab_functions() -> Set[str]:
     if _LAB_FUNCTION_AREAS:
         return _LAB_FUNCTION_AREAS
     try:
-        path = os.path.join(os.path.dirname(__file__), "Tescom_Functions.json")
+        functions_file = os.getenv('TESCOM_FUNCTIONS_FILE', 'Tescom_Functions.json')
+        if not os.path.isabs(functions_file):
+            path = os.path.join(os.path.dirname(__file__), functions_file)
+        else:
+            path = functions_file
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         areas: Set[str] = set()
