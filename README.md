@@ -29,7 +29,17 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 **Important**: Replace `your_openai_api_key_here` with your actual OpenAI API key.
 
-### 3. Run the Application
+### 3. Optional: Add Tescom Logo
+
+Place a logo image at `assets/tescom-logo.png` to display it in the header. PNG at ~40px height works well.
+
+Alternatively, set an external URL:
+
+```bash
+TESCOM_LOGO_URL=https://example.com/path/to/tescom-logo.png
+```
+
+### 4. Run the Application
 
 ```bash
 python app.py
@@ -45,7 +55,9 @@ Tescom/
 ├── app.py            # Gradio web interface
 ├── requirements.txt  # Python dependencies
 ├── env_template.txt  # Environment variables template
-└── README.md         # This file
+├── README.md         # This file
+└── assets/
+    └── tescom-logo.png  # Optional local logo image used in the header
 ```
 
 ## 🛠️ How It Works

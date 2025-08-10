@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+TESCOM_LOGO_URL = os.getenv("TESCOM_LOGO_URL", "")
+TESCOM_LOGO_PATH = os.path.join(os.path.dirname(__file__), "assets", "tescom-logo.png")
 
 # Check if API key is set
 if not os.getenv("OPENAI_API_KEY"):
@@ -89,30 +91,60 @@ def clear_chat():
 
 # Create the Gradio interface
 with gr.Blocks(
-    title="LangGraph Agent Chat",
-    theme=gr.themes.Soft(primary_hue="slate").set(
-        body_background_fill_dark="#0f0f23",
-        background_fill_primary_dark="#1a1a3e",
-        background_fill_secondary_dark="#252547",
-        border_color_primary_dark="#4a4a6a",
-        input_background_fill_dark="#1a1a3e",
-        button_primary_background_fill_dark="#4338ca",
-        button_primary_background_fill_hover_dark="#5b51d6"
-    ),
+    title="Tescom Capabilities Agent",
+    theme=gr.themes.Soft(primary_hue="teal"),
     css="""
-        html, body { height: 100%; }
-        .gradio-container { min-height: 100vh; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; }
-        /* Make the main app column stretch */
+        :root {
+            --tescom-teal: #00a3a3;
+            --tescom-teal-600: #008f8f;
+            --tescom-navy: #0f253e;
+            --bg: #ffffff;
+            --bg-soft: #f7f9fc;
+            --text: #0f172a;
+            --user-bubble: #e6f7f6; /* light teal */
+            --assistant-bubble: var(--bg-soft);
+        }
+        html, body { height: 100%; background: var(--bg); color: var(--text); }
+        .gradio-container { min-height: 100vh; max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; }
+        .gradio-container a { color: var(--tescom-teal); }
+        /* Stretch main column */
         .gradio-container > .gradio-block { display: flex; flex-direction: column; flex: 1 1 auto; }
-        /* Dynamically size the chatbot to fill viewport minus header and input areas */
-        #chatbot { height: calc(100vh - 260px) !important; }
-        .dark { color-scheme: dark; }
+        /* Dynamic chatbot height */
+        #chatbot { height: calc(100vh - 240px) !important; }
+        /* Brand header styling */
+        .brand-header { display: flex; align-items: center; gap: 12px; padding: 8px 0 4px; }
+        .brand-header img { height: 28px; }
+        /* Buttons */
+        button.svelte-1ipelgc, .gr-button-primary { background: var(--tescom-teal) !important; border-color: var(--tescom-teal) !important; }
+        button.svelte-1ipelgc:hover, .gr-button-primary:hover { background: var(--tescom-teal-600) !important; border-color: var(--tescom-teal-600) !important; }
+        /* Chat bubbles */
+        #chatbot .message.user { background: var(--user-bubble) !important; color: var(--text) !important; }
+        #chatbot .message.assistant { background: var(--assistant-bubble) !important; color: var(--text) !important; }
+        /* Inputs */
+        input, textarea { border-color: var(--tescom-teal) !important; }
     """
 ) as demo:
     
-    gr.Markdown("""
-    # 🤖 LangGraph Agent Chat
-    """)
+    # Brand header with local image support (assets/tescom-logo.png). Falls back to URL or text.
+    has_local_logo = os.path.exists(TESCOM_LOGO_PATH)
+    if has_local_logo:
+        import base64
+        with open(TESCOM_LOGO_PATH, "rb") as lf:
+            logo_b64 = base64.b64encode(lf.read()).decode("ascii")
+        with gr.Row(elem_classes=["brand-header"]):
+            gr.HTML(f"<img src='data:image/png;base64,{logo_b64}' alt='Tescom Logo' style='height:40px;' />")
+            gr.Markdown("## Tescom Capabilities Agent")
+    elif TESCOM_LOGO_URL:
+        gr.Markdown(f"""
+        <div class="brand-header">
+            <img src="{TESCOM_LOGO_URL}" alt="Tescom Logo" style="height:40px;" />
+            <h2 style="margin:0; display:inline-block; padding-left:12px;">Tescom Capabilities Agent</h2>
+        </div>
+        """)
+    else:
+        gr.Markdown("""
+        ## Tescom Capabilities Agent
+        """)
     
     chatbot = gr.Chatbot(
         label="Chat History",
