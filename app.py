@@ -1,8 +1,17 @@
 import gradio as gr
-from agent import chat_with_agent
+import logging
+from agent import chat_with_agent, cleanup_resources
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage, SystemMessage
 import os
+import atexit
 from dotenv import load_dotenv
+
+# Configure logging for the app
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Register cleanup function to run on exit
+atexit.register(cleanup_resources)
 
 # Load environment variables
 load_dotenv()
@@ -47,9 +56,15 @@ def _convert_messages_to_gradio(messages):
 
 
 def chat_interface(message, history):
-    """Handle chat interactions with the agent."""
+    """Handle chat interactions with the agent with progress indication."""
     if not message.strip():
+        logger.warning("Empty message received")
         return "", history
+    
+    logger.info(f"Processing chat message: {message[:50]}...")
+    
+    # Add user message immediately for better UX
+    temp_history = history + [{"role": "user", "content": message}]
     
     try:
         # Convert Gradio history to LangChain message format
@@ -69,16 +84,21 @@ def chat_interface(message, history):
                 if ai_msg:
                     conversation_history.append(AIMessage(content=ai_msg))
         
+        # Show processing indicator
+        temp_history.append({"role": "assistant", "content": "🔄 Processing your request..."})
+        
         # Get response from agent
         response, updated_conversation = chat_with_agent(message, conversation_history)
 
         # Build full history with tool-result echoing
         new_history = _convert_messages_to_gradio(updated_conversation)
 
+        logger.info(f"Chat response generated successfully")
         return "", new_history
     
     except Exception as e:
-        error_msg = f"An error occurred: {str(e)}"
+        logger.error(f"Error processing chat message: {e}")
+        error_msg = f"❌ An error occurred while processing your request: {str(e)}"
         new_history = history + [
             {"role": "user", "content": message},
             {"role": "assistant", "content": error_msg}
@@ -87,7 +107,24 @@ def chat_interface(message, history):
 
 def clear_chat():
     """Clear the chat history."""
+    logger.info("Chat history cleared")
     return [], ""
+
+def get_cache_status():
+    """Get current cache status for monitoring."""
+    try:
+        from agent import equipment_data_cache, search_results_cache, search_circuit_breaker, openai_circuit_breaker
+        equipment_size = equipment_data_cache.size()
+        search_size = search_results_cache.size()
+        
+        # Circuit breaker status
+        search_status = "🟢" if search_circuit_breaker.state == "CLOSED" else "🔴" if search_circuit_breaker.state == "OPEN" else "🟡"
+        openai_status = "🟢" if openai_circuit_breaker.state == "CLOSED" else "🔴" if openai_circuit_breaker.state == "OPEN" else "🟡"
+        
+        return f"📊 Cache: Equipment ({equipment_size}), Search ({search_size}) | Circuit Breakers: Search {search_status}, OpenAI {openai_status} | Phase 2 ✅"
+    except Exception as e:
+        logger.error(f"Error getting cache status: {e}")
+        return "📊 Status: Unable to retrieve system information"
 
 # Create the Gradio interface
 with gr.Blocks(
@@ -165,22 +202,41 @@ with gr.Blocks(
         submit_btn = gr.Button("Send", variant="primary", scale=1)
         clear_btn = gr.Button("Clear", variant="secondary", scale=1)
     
+    # Cache status display
+    cache_status = gr.Textbox(
+        value=get_cache_status(),
+        label="System Status",
+        interactive=False,
+        max_lines=1
+    )
+    
+    # Function to handle chat and update cache status
+    def chat_with_status_update(message, history):
+        result_msg, result_history = chat_interface(message, history)
+        status = get_cache_status()
+        return result_msg, result_history, status
+    
+    def clear_with_status_update():
+        history, msg = clear_chat()
+        status = get_cache_status()
+        return history, msg, status
+    
     # Event handlers
     submit_btn.click(
-        chat_interface,
+        chat_with_status_update,
         inputs=[msg, chatbot],
-        outputs=[msg, chatbot]
+        outputs=[msg, chatbot, cache_status]
     )
     
     msg.submit(
-        chat_interface,
+        chat_with_status_update,
         inputs=[msg, chatbot],
-        outputs=[msg, chatbot]
+        outputs=[msg, chatbot, cache_status]
     )
     
     clear_btn.click(
-        clear_chat,
-        outputs=[chatbot, msg]
+        clear_with_status_update,
+        outputs=[chatbot, msg, cache_status]
     )
 
 if __name__ == "__main__":

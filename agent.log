@@ -1,0 +1,669 @@
+2025-08-10 16:39:44,534 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-10 16:39:44,553 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-08-10 16:39:44,919 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 16:40:08,051 - __main__ - INFO - Processing chat message: 34401A...
+2025-08-10 16:40:08,051 - agent - INFO - Chat session started with input: 34401A...
+2025-08-10 16:40:08,100 - agent - INFO - Agent processing 2 messages
+2025-08-10 16:40:09,226 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:40:09,230 - agent - INFO - Parsing equipment details for: 34401A...
+2025-08-10 16:40:09,230 - agent - INFO - Loading equipment data from database
+2025-08-10 16:40:09,403 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:40:09,405 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:40:09,405 - agent - INFO - Initialized database connection pool
+2025-08-10 16:40:09,413 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:40:09,509 - agent - INFO - Loaded equipment data in 0.28s: 1410 manufacturers, 10039 models
+2025-08-10 16:40:09,517 - agent - INFO - Parsed equipment in 0.29s: AGILENT/HP/KEYSIGHT/34401A via model_first
+2025-08-10 16:40:11,827 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:40:11,831 - agent - INFO - Checking lab capability for: AGILENT/HP/KEYSIGHT/34401A
+2025-08-10 16:40:11,832 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 16:40:13,706 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:40:13,736 - agent - INFO - Agent completed processing in 5.64s after 3 steps
+2025-08-10 16:40:13,737 - agent - INFO - Chat session completed in 5.69s, response length: 253 chars
+2025-08-10 16:40:13,737 - __main__ - INFO - Chat response generated successfully
+2025-08-10 16:40:24,761 - __main__ - INFO - Processing chat message: bk 394b...
+2025-08-10 16:40:24,761 - agent - INFO - Chat session started with input: bk 394b...
+2025-08-10 16:40:24,763 - agent - INFO - Agent processing 6 messages
+2025-08-10 16:40:25,994 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:40:25,995 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 16:40:26,004 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 16:40:27,368 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:40:27,375 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 16:40:27,376 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 16:40:27,384 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 16:40:27,385 - agent - INFO - Performing new search for: BK PRECISION
+2025-08-10 16:40:28,526 - agent - INFO - Search API call completed in 1.14s
+2025-08-10 16:40:28,526 - agent - INFO - Cached search result for: BK PRECISION
+2025-08-10 16:40:28,546 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 16:40:28,554 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 16:40:31,828 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:40:31,829 - agent - INFO - Agent completed processing in 7.07s after 3 steps
+2025-08-10 16:40:31,829 - agent - INFO - Chat session completed in 7.07s, response length: 568 chars
+2025-08-10 16:40:31,829 - __main__ - INFO - Chat response generated successfully
+2025-08-10 16:41:05,232 - agent - INFO - Closing database connection pool
+2025-08-10 16:41:05,233 - agent - INFO - All connections in pool closed
+2025-08-10 16:51:15,113 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-10 16:51:15,122 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-08-10 16:51:15,661 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 16:51:26,028 - __main__ - INFO - Processing chat message: hp 3458A...
+2025-08-10 16:51:26,029 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 16:51:26,029 - agent - INFO - Sync chat session started with input: hp 3458A...
+2025-08-10 16:51:26,084 - agent - INFO - Agent processing 2 messages
+2025-08-10 16:51:27,920 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:51:27,925 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 16:51:27,925 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 16:51:27,926 - agent - INFO - Parsing equipment details for: hp 3458A...
+2025-08-10 16:51:27,926 - agent - INFO - Loading equipment data from database
+2025-08-10 16:51:28,112 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:51:28,115 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:51:28,115 - agent - INFO - Initialized database connection pool
+2025-08-10 16:51:28,123 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:51:28,215 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:51:28,222 - agent - INFO - Parsed equipment in 0.30s: KEYSIGHT/None via manufacturer_first
+2025-08-10 16:51:29,343 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:51:29,350 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 16:51:29,350 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 16:51:29,350 - agent - INFO - Checking lab capability for: KEYSIGHT/3458A
+2025-08-10 16:51:31,133 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:51:31,140 - agent - INFO - Agent completed processing in 5.06s after 3 steps
+2025-08-10 16:51:31,141 - agent - INFO - Sync chat session completed in 5.11s, response length: 231 chars
+2025-08-10 16:51:31,142 - __main__ - INFO - Chat response generated successfully
+2025-08-10 16:54:03,984 - agent - INFO - Parsing equipment details for: hp 3458A...
+2025-08-10 16:54:03,984 - agent - INFO - Loading equipment data from database
+2025-08-10 16:54:04,238 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:54:04,239 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:54:04,239 - agent - INFO - Initialized database connection pool
+2025-08-10 16:54:04,247 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:54:04,278 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:54:04,285 - agent - INFO - Parsed equipment in 0.30s: KEYSIGHT/None via manufacturer_first
+2025-08-10 16:54:04,288 - agent - INFO - Checking lab capability for: AGILENT/HP/KEYSIGHT/3458A
+2025-08-10 16:54:04,288 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 16:54:35,711 - agent - INFO - Loading equipment data from database
+2025-08-10 16:54:35,959 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:54:35,960 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:54:35,960 - agent - INFO - Initialized database connection pool
+2025-08-10 16:54:35,968 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:54:36,001 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:55:23,597 - agent - INFO - Loading equipment data from database
+2025-08-10 16:55:23,851 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:55:23,852 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:55:23,852 - agent - INFO - Initialized database connection pool
+2025-08-10 16:55:23,860 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:55:23,889 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:55:58,999 - agent - INFO - Loading equipment data from database
+2025-08-10 16:55:59,254 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:55:59,255 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:55:59,255 - agent - INFO - Initialized database connection pool
+2025-08-10 16:55:59,262 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:55:59,292 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:56:24,811 - agent - INFO - Invalidating equipment cache
+2025-08-10 16:56:24,811 - agent - INFO - Cache cleared
+2025-08-10 16:56:24,861 - agent - INFO - Parsing equipment details for: hp 3458A...
+2025-08-10 16:56:24,861 - agent - INFO - Loading equipment data from database
+2025-08-10 16:56:25,118 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:56:25,119 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:56:25,119 - agent - INFO - Initialized database connection pool
+2025-08-10 16:56:25,127 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:56:25,158 - agent - INFO - Loaded equipment data in 0.30s: 1410 manufacturers, 10039 models
+2025-08-10 16:56:25,165 - agent - INFO - Parsed equipment in 0.30s: KEYSIGHT/None via manufacturer_first
+2025-08-10 16:56:25,168 - agent - INFO - Checking lab capability for: KEYSIGHT/3458A
+2025-08-10 16:56:25,169 - agent - INFO - Checking lab capability for: AGILENT/HP/KEYSIGHT/3458A
+2025-08-10 16:56:25,169 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 16:56:48,754 - agent - INFO - Loading equipment data from database
+2025-08-10 16:56:49,008 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:56:49,009 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:56:49,009 - agent - INFO - Initialized database connection pool
+2025-08-10 16:56:49,017 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:56:49,047 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:57:38,459 - agent - INFO - Invalidating equipment cache
+2025-08-10 16:57:38,459 - agent - INFO - Cache cleared
+2025-08-10 16:57:38,513 - agent - INFO - Parsing equipment details for: hp 3458A...
+2025-08-10 16:57:38,513 - agent - INFO - Loading equipment data from database
+2025-08-10 16:57:38,769 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:57:38,770 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:57:38,770 - agent - INFO - Initialized database connection pool
+2025-08-10 16:57:38,777 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:57:38,808 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 16:57:38,809 - agent - INFO - Parsed equipment in 0.30s: KEYSIGHT/3458A via manufacturer_first
+2025-08-10 16:57:38,812 - agent - INFO - Checking lab capability for: KEYSIGHT/3458A
+2025-08-10 16:57:38,812 - agent - INFO - Resolved manufacturer alias 'KEYSIGHT' -> 'KEYSIGHT' -> 'AGILENT/HP/KEYSIGHT'
+2025-08-10 16:57:38,812 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 16:57:55,687 - agent - INFO - Async chat session started with input: hp 3458A...
+2025-08-10 16:57:55,782 - agent - INFO - Agent processing 2 messages
+2025-08-10 16:57:56,778 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:57:56,782 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 16:57:56,783 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 16:57:56,784 - agent - INFO - Parsing equipment details for: hp 3458A...
+2025-08-10 16:57:56,784 - agent - INFO - Loading equipment data from database
+2025-08-10 16:57:57,010 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 16:57:57,011 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 16:57:57,011 - agent - INFO - Initialized database connection pool
+2025-08-10 16:57:57,019 - agent - INFO - Processing 11552 equipment records
+2025-08-10 16:57:57,048 - agent - INFO - Loaded equipment data in 0.26s: 1410 manufacturers, 10039 models
+2025-08-10 16:57:57,049 - agent - INFO - Parsed equipment in 0.26s: KEYSIGHT/3458A via manufacturer_first
+2025-08-10 16:57:57,050 - agent - INFO - Concurrent tool execution completed in 0.27s
+2025-08-10 16:57:57,958 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:57:57,960 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 16:57:57,961 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 16:57:57,961 - agent - INFO - Checking lab capability for: KEYSIGHT/3458A
+2025-08-10 16:57:57,962 - agent - INFO - Resolved manufacturer alias 'KEYSIGHT' -> 'KEYSIGHT' -> 'AGILENT/HP/KEYSIGHT'
+2025-08-10 16:57:57,962 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 16:57:57,962 - agent - INFO - Concurrent tool execution completed in 0.00s
+2025-08-10 16:57:59,503 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 16:57:59,504 - agent - INFO - Agent completed processing in 3.72s after 3 steps
+2025-08-10 16:57:59,506 - agent - INFO - Async chat session completed in 3.82s, response length: 253 chars
+2025-08-10 17:07:56,071 - agent - INFO - Closing database connection pool
+2025-08-10 17:07:56,072 - agent - INFO - All connections in pool closed
+2025-08-10 17:08:02,151 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-10 17:08:02,161 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-08-10 17:08:02,546 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 17:08:14,498 - __main__ - INFO - Processing chat message: hp 3458A...
+2025-08-10 17:08:14,498 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:08:14,499 - agent - INFO - Sync chat session started with input: hp 3458A...
+2025-08-10 17:08:14,552 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:08:15,836 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:08:15,858 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:08:15,858 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:08:15,859 - agent - INFO - Parsing equipment details for: hp 3458A...
+2025-08-10 17:08:15,859 - agent - INFO - Loading equipment data from database
+2025-08-10 17:08:16,043 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:08:16,045 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:08:16,045 - agent - INFO - Initialized database connection pool
+2025-08-10 17:08:16,053 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:08:16,148 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:08:16,148 - agent - INFO - Parsed equipment in 0.29s: KEYSIGHT/3458A via manufacturer_first
+2025-08-10 17:08:17,075 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:08:17,078 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:08:17,078 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:08:17,079 - agent - INFO - Checking lab capability for: KEYSIGHT/3458A
+2025-08-10 17:08:17,079 - agent - INFO - Resolved manufacturer alias 'KEYSIGHT' -> 'KEYSIGHT' -> 'AGILENT/HP/KEYSIGHT'
+2025-08-10 17:08:17,079 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 17:08:18,950 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:08:18,957 - agent - INFO - Agent completed processing in 4.40s after 3 steps
+2025-08-10 17:08:18,958 - agent - INFO - Sync chat session completed in 4.46s, response length: 242 chars
+2025-08-10 17:08:18,958 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:08:39,913 - __main__ - INFO - Processing chat message: bk 394b...
+2025-08-10 17:08:39,913 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:08:39,914 - agent - INFO - Sync chat session started with input: bk 394b...
+2025-08-10 17:08:39,914 - agent - INFO - Agent processing 6 messages
+2025-08-10 17:08:41,475 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:08:41,476 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:08:41,476 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:08:41,477 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:08:41,484 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:08:42,416 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:08:42,427 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:08:42,427 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:08:42,428 - agent - INFO - Checking lab capability for: BK PRECISION/
+2025-08-10 17:08:44,912 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:08:44,919 - agent - INFO - Agent completed processing in 5.00s after 3 steps
+2025-08-10 17:08:44,920 - agent - INFO - Sync chat session completed in 5.01s, response length: 326 chars
+2025-08-10 17:08:44,920 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:16:20,145 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:16:20,145 - agent - INFO - Loading equipment data from database
+2025-08-10 17:16:20,398 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:16:20,399 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:16:20,399 - agent - INFO - Initialized database connection pool
+2025-08-10 17:16:20,408 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:16:20,437 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:16:20,444 - agent - INFO - Parsed equipment in 0.30s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:16:20,448 - agent - INFO - Performing new async search for: BK PRECISION 394B multimeter specifications
+2025-08-10 17:16:21,296 - agent - INFO - Async search API call completed in 0.85s
+2025-08-10 17:16:21,296 - agent - INFO - Cached search result for: BK PRECISION 394B multimeter specifications
+2025-08-10 17:16:21,300 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:16:21,306 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:16:21,307 - agent - INFO - Performing new async search for: BK PRECISION
+2025-08-10 17:16:21,307 - agent - INFO - Performing new async search for: BK PRECISION datasheet
+2025-08-10 17:16:21,307 - agent - INFO - Performing new async search for: BK PRECISION manual
+2025-08-10 17:16:21,308 - agent - INFO - Performing new async search for: BK PRECISION specifications
+2025-08-10 17:16:22,235 - agent - INFO - Async search API call completed in 0.93s
+2025-08-10 17:16:22,235 - agent - INFO - Cached search result for: BK PRECISION specifications
+2025-08-10 17:16:22,392 - agent - INFO - Async search API call completed in 1.09s
+2025-08-10 17:16:22,393 - agent - INFO - Cached search result for: BK PRECISION datasheet
+2025-08-10 17:16:22,466 - agent - INFO - Async search API call completed in 1.16s
+2025-08-10 17:16:22,466 - agent - INFO - Cached search result for: BK PRECISION
+2025-08-10 17:16:22,586 - agent - INFO - Async search API call completed in 1.28s
+2025-08-10 17:16:22,586 - agent - INFO - Cached search result for: BK PRECISION manual
+2025-08-10 17:16:22,602 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:16:22,609 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:16:55,418 - agent - INFO - Loading equipment data from database
+2025-08-10 17:16:55,710 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:16:55,711 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:16:55,711 - agent - INFO - Initialized database connection pool
+2025-08-10 17:16:55,719 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:16:55,750 - agent - INFO - Loaded equipment data in 0.33s: 1410 manufacturers, 10039 models
+2025-08-10 17:18:30,561 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:18:30,562 - agent - INFO - Loading equipment data from database
+2025-08-10 17:18:30,815 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:18:30,816 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:18:30,816 - agent - INFO - Initialized database connection pool
+2025-08-10 17:18:30,824 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:18:30,855 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:18:30,862 - agent - INFO - Parsed equipment in 0.30s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:18:30,866 - agent - INFO - Performing new async search for: BK PRECISION 394B multimeter specifications
+2025-08-10 17:18:31,925 - agent - INFO - Async search API call completed in 1.06s
+2025-08-10 17:18:31,925 - agent - INFO - Cached search result for: BK PRECISION 394B multimeter specifications
+2025-08-10 17:18:31,928 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:18:31,936 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:18:31,936 - agent - INFO - Extracted model '394B' from query using heuristics
+2025-08-10 17:18:31,936 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:18:31,936 - agent - INFO - Performing new async search for: BK PRECISION 394B datasheet
+2025-08-10 17:18:31,937 - agent - INFO - Performing new async search for: BK PRECISION 394B manual
+2025-08-10 17:18:31,937 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:18:32,743 - agent - INFO - Async search API call completed in 0.81s
+2025-08-10 17:18:32,743 - agent - INFO - Cached search result for: BK PRECISION 394B manual
+2025-08-10 17:18:32,746 - agent - INFO - Async search API call completed in 0.81s
+2025-08-10 17:18:32,746 - agent - INFO - Cached search result for: BK PRECISION 394B datasheet
+2025-08-10 17:18:32,889 - agent - INFO - Async search API call completed in 0.95s
+2025-08-10 17:18:32,889 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:18:33,200 - agent - INFO - Async search API call completed in 1.26s
+2025-08-10 17:18:33,201 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:18:33,218 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:18:33,224 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:19:45,784 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:19:45,785 - agent - INFO - Loading equipment data from database
+2025-08-10 17:19:46,031 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:19:46,032 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:19:46,032 - agent - INFO - Initialized database connection pool
+2025-08-10 17:19:46,039 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:19:46,071 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:19:46,078 - agent - INFO - Parsed equipment in 0.29s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:19:46,082 - agent - INFO - Performing new async search for: BK PRECISION 394B multimeter specifications
+2025-08-10 17:19:47,114 - agent - INFO - Async search API call completed in 1.03s
+2025-08-10 17:19:47,115 - agent - INFO - Cached search result for: BK PRECISION 394B multimeter specifications
+2025-08-10 17:19:47,117 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:19:47,124 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:19:47,124 - agent - INFO - Extracted model '394B' from query using heuristics
+2025-08-10 17:19:47,125 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:19:47,125 - agent - INFO - Performing new async search for: BK PRECISION 394B datasheet
+2025-08-10 17:19:47,125 - agent - INFO - Performing new async search for: BK PRECISION 394B manual
+2025-08-10 17:19:47,126 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:19:47,880 - agent - INFO - Async search API call completed in 0.76s
+2025-08-10 17:19:47,881 - agent - INFO - Cached search result for: BK PRECISION 394B datasheet
+2025-08-10 17:19:47,884 - agent - INFO - Async search API call completed in 0.76s
+2025-08-10 17:19:47,884 - agent - INFO - Cached search result for: BK PRECISION 394B manual
+2025-08-10 17:19:48,001 - agent - INFO - Async search API call completed in 0.88s
+2025-08-10 17:19:48,001 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:19:48,019 - agent - INFO - Async search API call completed in 0.89s
+2025-08-10 17:19:48,019 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:19:48,036 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:19:48,043 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:20:07,405 - agent - INFO - Async chat session started with input: bk 394b...
+2025-08-10 17:20:07,499 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:20:08,535 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:20:08,543 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:20:08,544 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:20:08,544 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:20:08,544 - agent - INFO - Loading equipment data from database
+2025-08-10 17:20:08,759 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:20:08,760 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:20:08,760 - agent - INFO - Initialized database connection pool
+2025-08-10 17:20:08,768 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:20:08,799 - agent - INFO - Loaded equipment data in 0.25s: 1410 manufacturers, 10039 models
+2025-08-10 17:20:08,806 - agent - INFO - Parsed equipment in 0.26s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:20:08,807 - agent - INFO - Concurrent tool execution completed in 0.26s
+2025-08-10 17:20:09,873 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:20:09,883 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:20:09,884 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:20:09,884 - agent - INFO - Checking lab capability for: BK PRECISION/
+2025-08-10 17:20:09,884 - agent - INFO - Concurrent tool execution completed in 0.00s
+2025-08-10 17:20:11,469 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:20:11,475 - agent - INFO - Agent completed processing in 3.98s after 3 steps
+2025-08-10 17:20:11,476 - agent - INFO - Async chat session completed in 4.07s, response length: 281 chars
+2025-08-10 17:20:55,570 - agent - INFO - Async chat session started with input: bk 394b...
+2025-08-10 17:20:55,665 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:20:59,690 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:20:59,702 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:20:59,702 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:20:59,703 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:20:59,703 - agent - INFO - Loading equipment data from database
+2025-08-10 17:20:59,926 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:20:59,927 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:20:59,927 - agent - INFO - Initialized database connection pool
+2025-08-10 17:20:59,935 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:20:59,966 - agent - INFO - Loaded equipment data in 0.26s: 1410 manufacturers, 10039 models
+2025-08-10 17:20:59,973 - agent - INFO - Parsed equipment in 0.27s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:20:59,973 - agent - INFO - Concurrent tool execution completed in 0.27s
+2025-08-10 17:21:01,200 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:21:01,206 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:21:01,207 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:21:01,208 - agent - INFO - Checking lab capability for: BK PRECISION/
+2025-08-10 17:21:01,208 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION
+2025-08-10 17:21:01,209 - agent - INFO - Parsing equipment details for: BK PRECISION...
+2025-08-10 17:21:01,217 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:21:01,218 - agent - INFO - Performing new async search for: BK PRECISION
+2025-08-10 17:21:01,219 - agent - INFO - Performing new async search for: BK PRECISION datasheet
+2025-08-10 17:21:01,219 - agent - INFO - Performing new async search for: BK PRECISION manual
+2025-08-10 17:21:01,220 - agent - INFO - Performing new async search for: BK PRECISION specifications
+2025-08-10 17:21:01,995 - agent - INFO - Async search API call completed in 0.78s
+2025-08-10 17:21:01,995 - agent - INFO - Cached search result for: BK PRECISION manual
+2025-08-10 17:21:02,075 - agent - INFO - Async search API call completed in 0.86s
+2025-08-10 17:21:02,076 - agent - INFO - Cached search result for: BK PRECISION
+2025-08-10 17:21:02,144 - agent - INFO - Async search API call completed in 0.92s
+2025-08-10 17:21:02,144 - agent - INFO - Cached search result for: BK PRECISION specifications
+2025-08-10 17:21:03,325 - agent - INFO - Async search API call completed in 2.11s
+2025-08-10 17:21:03,325 - agent - INFO - Cached search result for: BK PRECISION datasheet
+2025-08-10 17:21:03,343 - agent - INFO - Parsing equipment details for: BK PRECISION...
+2025-08-10 17:21:03,351 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/None via manufacturer_first
+2025-08-10 17:21:03,352 - agent - INFO - Concurrent tool execution completed in 2.15s
+2025-08-10 17:21:06,616 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:21:06,630 - agent - INFO - Agent completed processing in 10.96s after 3 steps
+2025-08-10 17:21:06,631 - agent - INFO - Async chat session completed in 11.06s, response length: 615 chars
+2025-08-10 17:21:45,719 - agent - INFO - Async chat session started with input: bk 394b...
+2025-08-10 17:21:45,807 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:21:47,084 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:21:47,089 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:21:47,090 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:21:47,091 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:21:47,091 - agent - INFO - Loading equipment data from database
+2025-08-10 17:21:47,314 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:21:47,315 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:21:47,315 - agent - INFO - Initialized database connection pool
+2025-08-10 17:21:47,323 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:21:47,353 - agent - INFO - Loaded equipment data in 0.26s: 1410 manufacturers, 10039 models
+2025-08-10 17:21:47,360 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:21:47,361 - agent - INFO - Parsed equipment in 0.27s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:21:47,361 - agent - INFO - Concurrent tool execution completed in 0.27s
+2025-08-10 17:21:48,351 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:21:48,356 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:21:48,357 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:21:48,358 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 17:21:48,358 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION 394B
+2025-08-10 17:21:48,359 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:21:48,366 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:21:48,366 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:21:48,367 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:21:48,368 - agent - INFO - Performing new async search for: BK PRECISION 394B datasheet
+2025-08-10 17:21:48,368 - agent - INFO - Performing new async search for: BK PRECISION 394B manual
+2025-08-10 17:21:48,368 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:21:49,371 - agent - INFO - Async search API call completed in 1.00s
+2025-08-10 17:21:49,371 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:21:49,421 - agent - INFO - Async search API call completed in 1.05s
+2025-08-10 17:21:49,421 - agent - INFO - Cached search result for: BK PRECISION 394B datasheet
+2025-08-10 17:21:49,687 - agent - INFO - Async search API call completed in 1.32s
+2025-08-10 17:21:49,688 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:21:49,779 - agent - INFO - Async search API call completed in 1.41s
+2025-08-10 17:21:49,779 - agent - INFO - Cached search result for: BK PRECISION 394B manual
+2025-08-10 17:21:49,796 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:21:49,803 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:21:49,803 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:21:49,804 - agent - INFO - Concurrent tool execution completed in 1.45s
+2025-08-10 17:21:53,019 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:21:53,027 - agent - INFO - Agent completed processing in 7.22s after 3 steps
+2025-08-10 17:21:53,028 - agent - INFO - Async chat session completed in 7.31s, response length: 670 chars
+2025-08-10 17:32:09,991 - agent - INFO - Closing database connection pool
+2025-08-10 17:32:09,992 - agent - INFO - All connections in pool closed
+2025-08-10 17:32:19,748 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-10 17:32:19,757 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-08-10 17:32:20,097 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 17:32:26,946 - __main__ - INFO - Processing chat message: 3458A...
+2025-08-10 17:32:26,947 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:26,947 - agent - INFO - Sync chat session started with input: 3458A...
+2025-08-10 17:32:27,000 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:32:28,292 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:32:28,308 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:32:28,309 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:28,309 - agent - INFO - Parsing equipment details for: 3458A...
+2025-08-10 17:32:28,309 - agent - INFO - Loading equipment data from database
+2025-08-10 17:32:28,498 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:32:28,499 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:32:28,499 - agent - INFO - Initialized database connection pool
+2025-08-10 17:32:28,507 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:32:28,602 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:32:28,608 - agent - INFO - Parsed equipment in 0.30s: AGILENT/HP/KEYSIGHT/3458A via model_first
+2025-08-10 17:32:29,644 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:32:29,648 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:32:29,648 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:29,648 - agent - INFO - Checking lab capability for: AGILENT/HP/KEYSIGHT/3458A
+2025-08-10 17:32:29,649 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 17:32:31,944 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:32:31,954 - agent - INFO - Agent completed processing in 4.95s after 3 steps
+2025-08-10 17:32:31,956 - agent - INFO - Sync chat session completed in 5.01s, response length: 264 chars
+2025-08-10 17:32:31,956 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:32:37,669 - __main__ - INFO - Processing chat message: bk 394b...
+2025-08-10 17:32:37,670 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:37,670 - agent - INFO - Sync chat session started with input: bk 394b...
+2025-08-10 17:32:37,671 - agent - INFO - Agent processing 6 messages
+2025-08-10 17:32:38,796 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:32:38,806 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:32:38,806 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:38,807 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:32:38,815 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:32:38,815 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:32:39,896 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:32:39,901 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:32:39,901 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:39,902 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 17:32:39,902 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION 394B
+2025-08-10 17:32:39,903 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:32:39,910 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:32:39,910 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:32:39,911 - agent - ERROR - Failed to run parallel searches: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:32:39,912 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:32:40,926 - agent - INFO - Async search API call completed in 1.01s
+2025-08-10 17:32:40,926 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:32:40,944 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:32:40,951 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:32:40,951 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:32:43,149 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:32:43,150 - agent - INFO - Agent completed processing in 5.48s after 3 steps
+2025-08-10 17:32:43,151 - agent - INFO - Sync chat session completed in 5.48s, response length: 479 chars
+2025-08-10 17:32:43,151 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:35:31,571 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 17:35:31,571 - agent - INFO - Loading equipment data from database
+2025-08-10 17:35:31,816 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:35:31,821 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:35:31,822 - agent - INFO - Initialized database connection pool
+2025-08-10 17:35:31,830 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:35:31,859 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:35:31,860 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION 394B
+2025-08-10 17:35:31,863 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:35:31,869 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:35:31,869 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:35:31,870 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:35:31,870 - agent - INFO - Performing new async search for: BK PRECISION 394B datasheet
+2025-08-10 17:35:31,870 - agent - INFO - Performing new async search for: BK PRECISION 394B manual
+2025-08-10 17:35:31,871 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:35:32,610 - agent - INFO - Async search API call completed in 0.74s
+2025-08-10 17:35:32,610 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:35:32,759 - agent - INFO - Async search API call completed in 0.89s
+2025-08-10 17:35:32,759 - agent - INFO - Cached search result for: BK PRECISION 394B manual
+2025-08-10 17:35:32,839 - agent - INFO - Async search API call completed in 0.97s
+2025-08-10 17:35:32,839 - agent - INFO - Cached search result for: BK PRECISION 394B datasheet
+2025-08-10 17:35:32,862 - agent - INFO - Async search API call completed in 0.99s
+2025-08-10 17:35:32,863 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:35:32,880 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:35:32,886 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:35:32,886 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:39:41,826 - agent - INFO - Async chat session started with input: bk 394b...
+2025-08-10 17:39:41,916 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:39:43,148 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:39:43,159 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:39:43,160 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:39:43,160 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:39:43,161 - agent - INFO - Loading equipment data from database
+2025-08-10 17:39:43,383 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:39:43,384 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:39:43,384 - agent - INFO - Initialized database connection pool
+2025-08-10 17:39:43,391 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:39:43,421 - agent - INFO - Loaded equipment data in 0.26s: 1410 manufacturers, 10039 models
+2025-08-10 17:39:43,428 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:39:43,428 - agent - INFO - Parsed equipment in 0.27s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:39:43,428 - agent - INFO - Concurrent tool execution completed in 0.27s
+2025-08-10 17:39:44,323 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:39:44,328 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:39:44,329 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:39:44,329 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 17:39:44,330 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION 394B
+2025-08-10 17:39:44,330 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:39:44,337 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:39:44,337 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:39:44,338 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:39:44,338 - agent - INFO - Performing new async search for: BK PRECISION 394B datasheet
+2025-08-10 17:39:44,339 - agent - INFO - Performing new async search for: BK PRECISION 394B manual
+2025-08-10 17:39:44,339 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:39:45,079 - agent - INFO - Async search API call completed in 0.74s
+2025-08-10 17:39:45,079 - agent - INFO - Cached search result for: BK PRECISION 394B manual
+2025-08-10 17:39:45,119 - agent - INFO - Async search API call completed in 0.78s
+2025-08-10 17:39:45,120 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:39:45,249 - agent - INFO - Async search API call completed in 0.91s
+2025-08-10 17:39:45,249 - agent - INFO - Cached search result for: BK PRECISION 394B datasheet
+2025-08-10 17:39:45,625 - agent - INFO - Async search API call completed in 1.29s
+2025-08-10 17:39:45,625 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:39:45,642 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:39:45,648 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:39:45,648 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:39:45,649 - agent - INFO - Concurrent tool execution completed in 1.32s
+2025-08-10 17:39:48,887 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:39:48,895 - agent - INFO - Agent completed processing in 6.98s after 3 steps
+2025-08-10 17:39:48,896 - agent - INFO - Async chat session completed in 7.07s, response length: 658 chars
+2025-08-10 17:46:29,264 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 17:46:39,706 - agent - INFO - Closing database connection pool
+2025-08-10 17:46:39,707 - agent - INFO - All connections in pool closed
+2025-08-10 17:46:50,485 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-10 17:46:50,504 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-08-10 17:46:50,811 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 17:46:58,330 - __main__ - INFO - Processing chat message: bk 394b...
+2025-08-10 17:46:58,330 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:46:58,330 - agent - INFO - Sync chat session started with input: bk 394b...
+2025-08-10 17:46:58,379 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:46:59,838 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:46:59,842 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:46:59,842 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:46:59,842 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:46:59,842 - agent - INFO - Loading equipment data from database
+2025-08-10 17:47:00,028 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:47:00,030 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:47:00,030 - agent - INFO - Initialized database connection pool
+2025-08-10 17:47:00,038 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:47:00,132 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 17:47:00,138 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:47:00,139 - agent - INFO - Parsed equipment in 0.30s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:47:01,032 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:01,039 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:47:01,039 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:01,040 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 17:47:01,040 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION 394B
+2025-08-10 17:47:01,041 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:47:01,047 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:47:01,047 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:47:01,047 - agent - ERROR - Failed to run parallel searches: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:01,048 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:47:02,213 - agent - INFO - Async search API call completed in 1.16s
+2025-08-10 17:47:02,213 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:47:02,230 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:47:02,237 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:47:02,237 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:47:05,258 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:05,266 - agent - INFO - Agent completed processing in 6.89s after 3 steps
+2025-08-10 17:47:05,267 - agent - INFO - Sync chat session completed in 6.94s, response length: 744 chars
+2025-08-10 17:47:05,267 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:47:22,803 - __main__ - INFO - Processing chat message: lecroy hdo6000b...
+2025-08-10 17:47:22,803 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:22,803 - agent - INFO - Sync chat session started with input: lecroy hdo6000b...
+2025-08-10 17:47:22,805 - agent - INFO - Agent processing 6 messages
+2025-08-10 17:47:23,938 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:23,940 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:47:23,940 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:23,941 - agent - INFO - Parsing equipment details for: lecroy hdo6000b...
+2025-08-10 17:47:23,948 - agent - INFO - Enhanced heuristic extracted model: HDO6000B
+2025-08-10 17:47:23,948 - agent - INFO - Parsed equipment in 0.01s: TELEDYNE LECROY/HDO6000B via manufacturer_first
+2025-08-10 17:47:25,206 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:25,212 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:47:25,212 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:25,213 - agent - INFO - Checking lab capability for: TELEDYNE LECROY/HDO6000B
+2025-08-10 17:47:25,213 - agent - INFO - Auto-triggering research for unsupported equipment: TELEDYNE LECROY HDO6000B
+2025-08-10 17:47:25,214 - agent - INFO - Parsing equipment details for: TELEDYNE LECROY HDO6000B...
+2025-08-10 17:47:25,222 - agent - INFO - Enhanced heuristic extracted model: HDO6000B
+2025-08-10 17:47:25,222 - agent - INFO - Parsed equipment in 0.01s: TELEDYNE LECROY/HDO6000B via manufacturer_first
+2025-08-10 17:47:25,222 - agent - ERROR - Failed to run parallel searches: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:25,223 - agent - INFO - Performing new async search for: TELEDYNE LECROY HDO6000B
+2025-08-10 17:47:26,390 - agent - INFO - Async search API call completed in 1.17s
+2025-08-10 17:47:26,390 - agent - INFO - Cached search result for: TELEDYNE LECROY HDO6000B
+2025-08-10 17:47:26,409 - agent - INFO - Parsing equipment details for: TELEDYNE LECROY HDO6000B...
+2025-08-10 17:47:26,417 - agent - INFO - Enhanced heuristic extracted model: HDO6000B
+2025-08-10 17:47:26,417 - agent - INFO - Parsed equipment in 0.01s: TELEDYNE LECROY/HDO6000B via manufacturer_first
+2025-08-10 17:47:29,148 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:29,151 - agent - INFO - Agent completed processing in 6.35s after 3 steps
+2025-08-10 17:47:29,152 - agent - INFO - Sync chat session completed in 6.35s, response length: 590 chars
+2025-08-10 17:47:29,152 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:47:48,381 - __main__ - INFO - Processing chat message: Spectro UV XRP-3000...
+2025-08-10 17:47:48,382 - agent - ERROR - Async chat failed, falling back to sync: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:48,382 - agent - INFO - Sync chat session started with input: Spectro UV XRP-3000...
+2025-08-10 17:47:48,383 - agent - INFO - Agent processing 10 messages
+2025-08-10 17:47:49,468 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:49,469 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:47:49,469 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:49,470 - agent - INFO - Parsing equipment details for: Spectro UV XRP-3000...
+2025-08-10 17:47:49,477 - agent - INFO - Enhanced heuristic extracted model: XRP-3000
+2025-08-10 17:47:49,478 - agent - INFO - Extracted manufacturer from prefix: Spectro UV
+2025-08-10 17:47:49,478 - agent - INFO - Parsed equipment in 0.01s: Spectro UV/XRP-3000 via heuristic_enhanced
+2025-08-10 17:47:50,365 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:50,368 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:47:50,368 - agent - ERROR - Concurrent tool execution failed: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:50,369 - agent - INFO - Checking lab capability for: Spectro UV/XRP-3000
+2025-08-10 17:47:50,369 - agent - INFO - Auto-triggering research for unsupported equipment: Spectro UV XRP-3000
+2025-08-10 17:47:50,370 - agent - INFO - Parsing equipment details for: Spectro UV XRP-3000...
+2025-08-10 17:47:50,379 - agent - INFO - Enhanced heuristic extracted model: XRP-3000
+2025-08-10 17:47:50,379 - agent - INFO - Extracted manufacturer from prefix: Spectro UV
+2025-08-10 17:47:50,379 - agent - INFO - Parsed equipment in 0.01s: Spectro UV/XRP-3000 via heuristic_enhanced
+2025-08-10 17:47:50,379 - agent - ERROR - Failed to run parallel searches: There is no current event loop in thread 'AnyIO worker thread'.
+2025-08-10 17:47:50,381 - agent - INFO - Performing new async search for: Spectro UV XRP-3000
+2025-08-10 17:47:51,252 - agent - INFO - Async search API call completed in 0.87s
+2025-08-10 17:47:51,252 - agent - INFO - Cached search result for: Spectro UV XRP-3000
+2025-08-10 17:47:51,270 - agent - INFO - Parsing equipment details for: Spectro UV XRP-3000...
+2025-08-10 17:47:51,279 - agent - INFO - Enhanced heuristic extracted model: XRP-3000
+2025-08-10 17:47:51,279 - agent - INFO - Extracted manufacturer from prefix: Spectro UV
+2025-08-10 17:47:51,279 - agent - INFO - Parsed equipment in 0.01s: Spectro UV/XRP-3000 via heuristic_enhanced
+2025-08-10 17:47:53,427 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:47:53,432 - agent - INFO - Agent completed processing in 5.05s after 3 steps
+2025-08-10 17:47:53,432 - agent - INFO - Sync chat session completed in 5.05s, response length: 501 chars
+2025-08-10 17:47:53,432 - __main__ - INFO - Chat response generated successfully
+2025-08-10 17:48:41,914 - agent - INFO - Closing database connection pool
+2025-08-10 17:48:41,915 - agent - INFO - All connections in pool closed
+2025-08-10 17:54:57,153 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:55:41,211 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:55:42,180 - agent - INFO - Async search API call completed in 0.97s
+2025-08-10 17:55:42,180 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:56:48,975 - agent - INFO - Performing new async search for: BK PRECISION 394B specifications
+2025-08-10 17:56:49,836 - agent - INFO - Async search API call completed in 0.86s
+2025-08-10 17:56:49,836 - agent - INFO - Cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:56:49,837 - agent - INFO - Async chat session started with input: bk 394b...
+2025-08-10 17:56:49,880 - agent - INFO - Agent processing 2 messages
+2025-08-10 17:56:51,024 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:56:51,028 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-10 17:56:51,029 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:56:51,030 - agent - INFO - Parsing equipment details for: bk 394b...
+2025-08-10 17:56:51,030 - agent - INFO - Loading equipment data from database
+2025-08-10 17:56:51,253 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 17:56:51,255 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 17:56:51,255 - agent - INFO - Initialized database connection pool
+2025-08-10 17:56:51,263 - agent - INFO - Processing 11552 equipment records
+2025-08-10 17:56:51,292 - agent - INFO - Loaded equipment data in 0.26s: 1410 manufacturers, 10039 models
+2025-08-10 17:56:51,299 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:56:51,299 - agent - INFO - Parsed equipment in 0.27s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:56:51,299 - agent - INFO - Concurrent tool execution completed in 0.27s
+2025-08-10 17:56:52,859 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:56:52,880 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-10 17:56:52,881 - agent - INFO - Executing 1 tools concurrently
+2025-08-10 17:56:52,882 - agent - INFO - Checking lab capability for: BK PRECISION/394B
+2025-08-10 17:56:52,882 - agent - INFO - Auto-triggering research for unsupported equipment: BK PRECISION 394B
+2025-08-10 17:56:52,883 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:56:52,890 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:56:52,890 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:56:52,891 - agent - INFO - Performing new async search for: BK PRECISION 394B
+2025-08-10 17:56:52,891 - agent - INFO - Performing new async search for: BK PRECISION 394B datasheet
+2025-08-10 17:56:52,891 - agent - INFO - Performing new async search for: BK PRECISION 394B manual
+2025-08-10 17:56:52,892 - agent - INFO - Returning cached search result for: BK PRECISION 394B specifications
+2025-08-10 17:56:53,609 - agent - INFO - Async search API call completed in 0.72s
+2025-08-10 17:56:53,609 - agent - INFO - Cached search result for: BK PRECISION 394B datasheet
+2025-08-10 17:56:53,661 - agent - INFO - Async search API call completed in 0.77s
+2025-08-10 17:56:53,662 - agent - INFO - Cached search result for: BK PRECISION 394B manual
+2025-08-10 17:56:53,812 - agent - INFO - Async search API call completed in 0.92s
+2025-08-10 17:56:53,812 - agent - INFO - Cached search result for: BK PRECISION 394B
+2025-08-10 17:56:53,830 - agent - INFO - Parsing equipment details for: BK PRECISION 394B...
+2025-08-10 17:56:53,837 - agent - INFO - Enhanced heuristic extracted model: 394B
+2025-08-10 17:56:53,837 - agent - INFO - Parsed equipment in 0.01s: BK PRECISION/394B via manufacturer_first
+2025-08-10 17:56:53,838 - agent - INFO - Concurrent tool execution completed in 0.96s
+2025-08-10 17:56:56,809 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-10 17:56:56,811 - agent - INFO - Agent completed processing in 6.93s after 3 steps
+2025-08-10 17:56:56,812 - agent - INFO - Async chat session completed in 6.97s, response length: 757 chars

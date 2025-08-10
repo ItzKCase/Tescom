@@ -19,6 +19,36 @@ A conversational AI agent built with LangGraph and LangChain, featuring a beauti
 pip install -r requirements.txt
 ```
 
+### 1b. Build the Equipment Database from Excel
+
+Create a SQLite DB and Parquet export from `Tescom_new_list.xlsx` (or your own Excel):
+
+```bash
+python build_equipment_db.py --excel "./Tescom_new_list.xlsx" --db equipment.db --rebuild --report
+```
+
+This will:
+
+- Create or update `equipment.db` with tables `equipment` and `equipment_fts` (FTS5 enabled)
+- Idempotently upsert rows using a unique index on `(manufacturer_norm, model_norm)`
+- Auto-create and load alias CSVs in the chosen aliases directory: `manufacturer_alias.csv`, `model_alias.csv`
+- Export a cleaned `equipment.parquet`
+- Print a summary report
+
+Programmatic search example:
+
+```python
+from build_equipment_db import search_equipment
+
+res = search_equipment(
+    db_path="equipment.db",
+    manufacturer_or_query="Keysight",
+    model="34401A",
+    limit=5,
+)
+print(res)
+```
+
 ### 2. Set Up OpenAI API Key
 
 Create a `.env` file in the project root:
@@ -53,6 +83,7 @@ The web interface will be available at `http://localhost:7860`
 Tescom/
 ├── agent.py          # LangGraph agent implementation
 ├── app.py            # Gradio web interface
+├── build_equipment_db.py # Excel → SQLite + Parquet builder with search API
 ├── requirements.txt  # Python dependencies
 ├── env_template.txt  # Environment variables template
 ├── README.md         # This file

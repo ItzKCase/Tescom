@@ -14,3 +14,11 @@ pydantic==2.11.7
 
 # Search functionality
 requests==2.32.4
+pandas
+pyarrow
+openpyxl
+
+# Async dependencies for Phase 2
+aiohttp==3.9.1
+asyncio-throttle==1.0.2
+tenacity==8.2.3
