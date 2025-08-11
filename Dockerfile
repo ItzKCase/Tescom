@@ -31,6 +31,16 @@ ENV PATH="/home/appuser/.local/bin:$PATH"
 # Copy application code
 COPY --chown=appuser:appuser . .
 
+# Ensure database is available in the container
+# If equipment.db exists, copy it to the data directory for persistence
+RUN if [ -f /app/equipment.db ]; then \
+        cp /app/equipment.db /app/data/equipment.db && \
+        echo "Database copied to /app/data/equipment.db"; \
+    else \
+        echo "WARNING: equipment.db not found in build context"; \
+        echo "The database will need to be built or mounted from a volume"; \
+    fi
+
 # Set environment variables for Docker
 ENV PYTHONPATH=/app \
     LOG_DIR=/app/logs \

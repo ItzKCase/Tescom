@@ -667,3 +667,25 @@
 2025-08-10 17:56:56,809 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-08-10 17:56:56,811 - agent - INFO - Agent completed processing in 6.93s after 3 steps
 2025-08-10 17:56:56,812 - agent - INFO - Async chat session completed in 6.97s, response length: 757 chars
+2025-08-10 19:33:22,517 - agent - INFO - Loading equipment data from database
+2025-08-10 19:33:22,799 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 19:33:22,800 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 19:33:22,800 - agent - INFO - Initialized database connection pool
+2025-08-10 19:33:22,808 - agent - INFO - Processing 11552 equipment records
+2025-08-10 19:33:22,839 - agent - INFO - Loaded equipment data in 0.32s: 1410 manufacturers, 10039 models
+2025-08-10 19:33:22,894 - agent - INFO - Parsing equipment details for: keysight 34401a...
+2025-08-10 19:33:22,895 - agent - INFO - Parsed equipment in 0.00s: KEYSIGHT/34401A via manufacturer_first
+2025-08-10 19:33:22,896 - agent - INFO - Checking lab capability for: KEYSIGHT/34401A
+2025-08-10 19:33:22,896 - agent - INFO - Resolved manufacturer alias 'KEYSIGHT' -> 'KEYSIGHT' -> 'AGILENT/HP/KEYSIGHT'
+2025-08-10 19:33:22,896 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 19:46:17,287 - agent - INFO - Parsing equipment details for: keysight 34401a...
+2025-08-10 19:46:17,287 - agent - INFO - Loading equipment data from database
+2025-08-10 19:46:17,542 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-10 19:46:17,543 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-10 19:46:17,543 - agent - INFO - Initialized database connection pool
+2025-08-10 19:46:17,552 - agent - INFO - Processing 11552 equipment records
+2025-08-10 19:46:17,581 - agent - INFO - Loaded equipment data in 0.29s: 1410 manufacturers, 10039 models
+2025-08-10 19:46:17,582 - agent - INFO - Parsed equipment in 0.30s: KEYSIGHT/34401A via manufacturer_first
+2025-08-10 19:46:17,585 - agent - INFO - Checking lab capability for: KEYSIGHT/34401A
+2025-08-10 19:46:17,585 - agent - INFO - Resolved manufacturer alias 'KEYSIGHT' -> 'KEYSIGHT' -> 'AGILENT/HP/KEYSIGHT'
+2025-08-10 19:46:17,585 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
