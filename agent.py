@@ -890,21 +890,54 @@ def _load_equipment_data() -> None:
 
         conn = _get_db_connection()
         cur = conn.cursor()
-        # Check if level4_only and comments columns exist (graceful handling for older DBs)
+        # Check if level4_only, comments, and price columns exist (graceful handling for older DBs)
         try:
             cur.execute("PRAGMA table_info(equipment)")
             columns = [row[1] for row in cur.fetchall()]
             has_level4_only = 'level4_only' in columns
             has_comments = 'comments' in columns
+            has_price_columns = all(col in columns for col in ['price_level1', 'price_level2', 'price_level3'])
         except Exception:
             has_level4_only = False
             has_comments = False
+            has_price_columns = False
         
-        if has_level4_only and has_comments:
+        # Build SQL query based on available columns
+        if has_level4_only and has_comments and has_price_columns:
             cur.execute(
                 """
                 SELECT manufacturer, model, description, accredited,
                        COALESCE(level4_only, 0) AS level4_only,
+                       COALESCE(comments, '') AS comments,
+                       price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
+        elif has_level4_only and has_comments:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       COALESCE(level4_only, 0) AS level4_only,
+                       COALESCE(comments, '') AS comments,
+                       NULL AS price_level1, NULL AS price_level2, NULL AS price_level3
+                FROM equipment
+                """
+            )
+        elif has_level4_only and has_price_columns:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       COALESCE(level4_only, 0) AS level4_only,
+                       '' AS comments,
+                       price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
+        elif has_comments and has_price_columns:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       0 AS level4_only,
                        COALESCE(comments, '') AS comments,
                        price_level1, price_level2, price_level3
                 FROM equipment
@@ -916,7 +949,7 @@ def _load_equipment_data() -> None:
                 SELECT manufacturer, model, description, accredited,
                        COALESCE(level4_only, 0) AS level4_only,
                        '' AS comments,
-                       price_level1, price_level2, price_level3
+                       NULL AS price_level1, NULL AS price_level2, NULL AS price_level3
                 FROM equipment
                 """
             )
@@ -926,17 +959,28 @@ def _load_equipment_data() -> None:
                 SELECT manufacturer, model, description, accredited,
                        0 AS level4_only,
                        COALESCE(comments, '') AS comments,
-                       price_level1, price_level2, price_level3
+                       NULL AS price_level1, NULL AS price_level2, NULL AS price_level3
                 FROM equipment
                 """
             )
-        else:
+        elif has_price_columns:
             cur.execute(
                 """
                 SELECT manufacturer, model, description, accredited,
                        0 AS level4_only,
                        '' AS comments,
                        price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
+        else:
+            # Minimal compatibility - no optional columns
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       0 AS level4_only,
+                       '' AS comments,
+                       NULL AS price_level1, NULL AS price_level2, NULL AS price_level3
                 FROM equipment
                 """
             )
