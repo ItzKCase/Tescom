@@ -1695,6 +1695,13 @@ def agent_function(state: AgentState) -> AgentState:
         logger.info(f"Step {step + 1}: Executing {len(tool_calls)} tools concurrently")
         
         try:
+            # Check if we're in a problematic thread
+            current_thread = threading.current_thread().name
+            if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
+                logger.debug(f"Skipping concurrent execution in {current_thread}, using sequential")
+                # Fall through to sequential execution below
+                raise Exception("Skip to sequential execution")
+            
             # Run concurrent tool execution
             loop = asyncio.get_event_loop()
             if loop.is_running():
@@ -1812,7 +1819,7 @@ def _equipment_type_from_text(text: str) -> Optional[str]:
     text_lower = text.lower()
     explicit_types = {
         "multimeter": ["multimeter", "dmm", "digital multimeter"],
-        "oscilloscope": ["oscilloscope", "scope", "dso"],
+        "oscilloscope": ["oscilloscope", "scope", "dso", "hdo", "mdo", "tds"],
         "power_supply": ["power supply", "psu"],
         "calibrator": ["calibrator", "calibration standard"],
         "spectrum_analyzer": ["spectrum analyzer", "signal analyzer"],
@@ -1827,7 +1834,7 @@ def _equipment_type_from_text(text: str) -> Optional[str]:
     # If no explicit type found, use token-based matching
     keywords = {
         "multimeter": {"dmm", "multimeter", "voltage", "current", "resistance", "handheld", "digital", "true", "rms"},
-        "oscilloscope": {"scope", "oscilloscope", "tds", "dso", "waveform", "bandwidth"},
+        "oscilloscope": {"scope", "oscilloscope", "tds", "dso", "hdo", "mdo", "waveform", "bandwidth", "lecroy", "teledyne"},
         "calibrator": {"calibrator", "multi", "source", "5520a", "5720a", "standard"},
         "power_supply": {"psu", "supply", "dc", "power"},
         "spectrum_analyzer": {"spectrum", "analyzer", "rsa", "sa", "frequency"},
@@ -1917,14 +1924,23 @@ def infer_capability_via_research(query: str) -> str:
         
         # Execute parallel searches
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # Create a new event loop in a thread if current loop is running
-                with ThreadPoolExecutor() as executor:
-                    future = executor.submit(asyncio.run, run_parallel_searches())
-                    description, snippet = future.result(timeout=120)  # 2 minutes timeout
+            # Check if we're in a problematic thread
+            current_thread = threading.current_thread().name
+            if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
+                logger.debug(f"Skipping parallel searches in {current_thread}, using sequential")
+                # Fall back to single search
+                sr = google_search.invoke({"query": queries[0] if queries else query})
+                snippet = sr if isinstance(sr, str) else str(sr)
+                description = _extract_description_from_search(snippet)
             else:
-                description, snippet = loop.run_until_complete(run_parallel_searches())
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    # Create a new event loop in a thread if current loop is running
+                    with ThreadPoolExecutor() as executor:
+                        future = executor.submit(asyncio.run, run_parallel_searches())
+                        description, snippet = future.result(timeout=120)  # 2 minutes timeout
+                else:
+                    description, snippet = loop.run_until_complete(run_parallel_searches())
         except Exception as e:
             logger.error(f"Failed to run parallel searches: {e}")
             # Fallback to synchronous search
@@ -1941,7 +1957,7 @@ def infer_capability_via_research(query: str) -> str:
         overlaps = []
         # Direct keyword alignments for common categories to ensure coverage (e.g., oscilloscope)
         direct_map = {
-            "oscilloscope": ["oscilloscope", "scope", "dso"],
+            "oscilloscope": ["oscilloscope", "scope", "dso", "hdo", "mdo", "tds", "lecroy", "teledyne"],
             "multimeter": ["multimeter", "dmm", "true rms", "handheld", "digital multimeter", "voltage", "current", "resistance"],
             "calibrator": ["calibrator", "calibration standard"],
             "power supply": ["power supply", "psu"],
@@ -1967,9 +1983,16 @@ def infer_capability_via_research(query: str) -> str:
             else:
                 # Also consider direct keyword match to measurement area description
                 for label, kws in direct_map.items():
-                    if any(k in tokens for k in _tokenize_simple(" ".join(kws))) and label in area.lower():
-                        overlaps.append(area)
-                        break
+                    # Check if any keywords from this equipment type are in our tokens
+                    if any(k in tokens for k in _tokenize_simple(" ".join(kws))):
+                        # Check if this equipment type matches the area (handle singular/plural)
+                        area_lower = area.lower()
+                        if (label in area_lower or 
+                            label.rstrip('s') in area_lower or  # Remove plural 's'
+                            (label + 's') in area_lower or      # Add plural 's'
+                            any(kw in area_lower for kw in _tokenize_simple(" ".join(kws)))):
+                            overlaps.append(area)
+                            break
 
         # 3) Similar models from DB (by collapsed token containment)
         _load_equipment_data()
@@ -2149,6 +2172,12 @@ def chat_with_agent(user_input: str, conversation_history: list = None) -> tuple
     Now uses async execution for better performance.
     """
     try:
+        # Check if we're in a problematic thread
+        current_thread = threading.current_thread().name
+        if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
+            logger.debug(f"Skipping async chat in {current_thread}, using sync")
+            return chat_with_agent_sync(user_input, conversation_history)
+        
         # Try to run asynchronously for better performance
         loop = asyncio.get_event_loop()
         if loop.is_running():
