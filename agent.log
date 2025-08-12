@@ -689,3 +689,503 @@
 2025-08-10 19:46:17,585 - agent - INFO - Checking lab capability for: KEYSIGHT/34401A
 2025-08-10 19:46:17,585 - agent - INFO - Resolved manufacturer alias 'KEYSIGHT' -> 'KEYSIGHT' -> 'AGILENT/HP/KEYSIGHT'
 2025-08-10 19:46:17,585 - agent - INFO - Capability check completed in 0.00s: 1 matches, supported=True
+2025-08-10 19:56:22,101 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-10 19:56:23,754 - httpx - INFO - HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-10 19:56:25,767 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-08-11 20:08:50,350 - agent - INFO - Async chat session started with input: TEKTRONIX TDS3012B...
+2025-08-11 20:08:50,664 - agent - INFO - Agent processing 2 messages
+2025-08-11 20:08:51,969 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:08:52,055 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-11 20:08:52,056 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:08:52,057 - agent - INFO - Parsing equipment details for: TEKTRONIX TDS3012B...
+2025-08-11 20:08:52,057 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:53,129 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:53,133 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-11 20:08:53,133 - agent - INFO - Initialized database connection pool
+2025-08-11 20:08:53,134 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:53,134 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:53,136 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:53,136 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:53,136 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:53,138 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:53,139 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:53,139 - agent - INFO - Enhanced heuristic extracted model: TDS3012B
+2025-08-11 20:08:53,139 - agent - INFO - Extracted manufacturer from prefix: TEKTRONIX
+2025-08-11 20:08:53,139 - agent - INFO - Parsed equipment in 1.08s: TEKTRONIX/TDS3012B via heuristic_enhanced
+2025-08-11 20:08:53,141 - agent - INFO - Concurrent tool execution completed in 1.09s
+2025-08-11 20:08:54,205 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:08:54,207 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-11 20:08:54,208 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:08:54,208 - agent - INFO - Checking lab capability for: TEKTRONIX/TDS3012B
+2025-08-11 20:08:54,208 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:54,212 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:54,212 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:54,212 - agent - INFO - Auto-triggering research for unsupported equipment: TEKTRONIX TDS3012B
+2025-08-11 20:08:54,213 - agent - INFO - Parsing equipment details for: TEKTRONIX TDS3012B...
+2025-08-11 20:08:54,213 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:54,215 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:54,216 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:54,216 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:54,219 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:54,219 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:54,219 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:54,221 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:54,221 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:54,221 - agent - INFO - Enhanced heuristic extracted model: TDS3012B
+2025-08-11 20:08:54,222 - agent - INFO - Extracted manufacturer from prefix: TEKTRONIX
+2025-08-11 20:08:54,222 - agent - INFO - Parsed equipment in 0.01s: TEKTRONIX/TDS3012B via heuristic_enhanced
+2025-08-11 20:08:54,222 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B
+2025-08-11 20:08:54,223 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B datasheet
+2025-08-11 20:08:54,223 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B manual
+2025-08-11 20:08:54,224 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B specifications
+2025-08-11 20:08:54,911 - agent - INFO - Async search API call completed in 0.69s
+2025-08-11 20:08:54,911 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B manual
+2025-08-11 20:08:55,064 - agent - INFO - Async search API call completed in 0.84s
+2025-08-11 20:08:55,064 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B
+2025-08-11 20:08:55,124 - agent - INFO - Async search API call completed in 0.90s
+2025-08-11 20:08:55,124 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B specifications
+2025-08-11 20:08:55,162 - agent - INFO - Async search API call completed in 0.94s
+2025-08-11 20:08:55,162 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B datasheet
+2025-08-11 20:08:55,167 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:55,170 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:55,170 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:55,172 - agent - INFO - Parsing equipment details for: TEKTRONIX TDS3012B...
+2025-08-11 20:08:55,172 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:55,175 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:55,175 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:55,175 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:55,177 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:55,177 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:55,177 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:55,180 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:55,180 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:55,180 - agent - INFO - Enhanced heuristic extracted model: TDS3012B
+2025-08-11 20:08:55,180 - agent - INFO - Extracted manufacturer from prefix: TEKTRONIX
+2025-08-11 20:08:55,180 - agent - INFO - Parsed equipment in 0.01s: TEKTRONIX/TDS3012B via heuristic_enhanced
+2025-08-11 20:08:55,181 - agent - INFO - Concurrent tool execution completed in 0.97s
+2025-08-11 20:08:57,960 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:08:57,965 - agent - INFO - Agent completed processing in 7.30s after 3 steps
+2025-08-11 20:08:57,966 - agent - INFO - Async chat session completed in 7.62s, response length: 594 chars
+2025-08-11 20:08:57,967 - agent - INFO - Async chat session started with input: Keysight 34401A...
+2025-08-11 20:08:57,968 - agent - INFO - Agent processing 2 messages
+2025-08-11 20:08:58,985 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:08:58,992 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-11 20:08:58,992 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:08:58,993 - agent - INFO - Parsing equipment details for: Keysight 34401A...
+2025-08-11 20:08:58,993 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:58,996 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:58,997 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:58,997 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:59,000 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:59,001 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:59,001 - agent - INFO - Loading equipment data from database
+2025-08-11 20:08:59,003 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:08:59,004 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:08:59,004 - agent - INFO - Enhanced heuristic extracted model: 34401A
+2025-08-11 20:08:59,004 - agent - INFO - Extracted manufacturer from prefix: Keysight
+2025-08-11 20:08:59,004 - agent - INFO - Parsed equipment in 0.01s: Keysight/34401A via heuristic_enhanced
+2025-08-11 20:08:59,004 - agent - INFO - Concurrent tool execution completed in 0.01s
+2025-08-11 20:09:00,359 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:09:00,366 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-11 20:09:00,366 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:09:00,367 - agent - INFO - Checking lab capability for: Keysight/34401A
+2025-08-11 20:09:00,367 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:00,371 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:00,371 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:00,371 - agent - INFO - Auto-triggering research for unsupported equipment: Keysight 34401A
+2025-08-11 20:09:00,372 - agent - INFO - Parsing equipment details for: Keysight 34401A...
+2025-08-11 20:09:00,372 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:00,375 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:00,375 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:00,375 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:00,378 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:00,378 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:00,379 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:00,381 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:00,381 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:00,382 - agent - INFO - Enhanced heuristic extracted model: 34401A
+2025-08-11 20:09:00,382 - agent - INFO - Extracted manufacturer from prefix: Keysight
+2025-08-11 20:09:00,382 - agent - INFO - Parsed equipment in 0.01s: Keysight/34401A via heuristic_enhanced
+2025-08-11 20:09:00,383 - agent - INFO - Performing new async search for: Keysight 34401A
+2025-08-11 20:09:00,383 - agent - INFO - Performing new async search for: Keysight 34401A datasheet
+2025-08-11 20:09:00,384 - agent - INFO - Performing new async search for: Keysight 34401A manual
+2025-08-11 20:09:00,384 - agent - INFO - Performing new async search for: Keysight 34401A specifications
+2025-08-11 20:09:01,266 - agent - INFO - Async search API call completed in 0.88s
+2025-08-11 20:09:01,266 - agent - INFO - Cached search result for: Keysight 34401A manual
+2025-08-11 20:09:01,356 - agent - INFO - Async search API call completed in 0.97s
+2025-08-11 20:09:01,356 - agent - INFO - Cached search result for: Keysight 34401A datasheet
+2025-08-11 20:09:01,400 - agent - INFO - Async search API call completed in 1.02s
+2025-08-11 20:09:01,400 - agent - INFO - Cached search result for: Keysight 34401A
+2025-08-11 20:09:01,489 - agent - INFO - Async search API call completed in 1.11s
+2025-08-11 20:09:01,490 - agent - INFO - Cached search result for: Keysight 34401A specifications
+2025-08-11 20:09:01,493 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:01,496 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:01,496 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:01,497 - agent - INFO - Parsing equipment details for: Keysight 34401A...
+2025-08-11 20:09:01,497 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:01,500 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:01,500 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:01,500 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:01,503 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:01,503 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:01,503 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:01,505 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:01,506 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:01,506 - agent - INFO - Enhanced heuristic extracted model: 34401A
+2025-08-11 20:09:01,506 - agent - INFO - Extracted manufacturer from prefix: Keysight
+2025-08-11 20:09:01,506 - agent - INFO - Parsed equipment in 0.01s: Keysight/34401A via heuristic_enhanced
+2025-08-11 20:09:01,506 - agent - INFO - Concurrent tool execution completed in 1.14s
+2025-08-11 20:09:04,650 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:09:04,658 - agent - INFO - Agent completed processing in 6.69s after 3 steps
+2025-08-11 20:09:04,659 - agent - INFO - Async chat session completed in 6.69s, response length: 607 chars
+2025-08-11 20:09:04,659 - agent - INFO - Async chat session started with input: Unknown XYZ123...
+2025-08-11 20:09:04,661 - agent - INFO - Agent processing 2 messages
+2025-08-11 20:09:05,511 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:09:05,528 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-11 20:09:05,528 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:09:05,529 - agent - INFO - Parsing equipment details for: Unknown XYZ123...
+2025-08-11 20:09:05,529 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:05,532 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:05,532 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:05,533 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:05,535 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:05,535 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:05,535 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:05,538 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:05,538 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:05,538 - agent - INFO - Enhanced heuristic extracted model: XYZ123
+2025-08-11 20:09:05,538 - agent - INFO - Extracted manufacturer from prefix: Unknown
+2025-08-11 20:09:05,538 - agent - INFO - Parsed equipment in 0.01s: Unknown/XYZ123 via heuristic_enhanced
+2025-08-11 20:09:05,538 - agent - INFO - Concurrent tool execution completed in 0.01s
+2025-08-11 20:09:06,379 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:09:06,392 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-11 20:09:06,392 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:09:06,394 - agent - INFO - Checking lab capability for: Unknown/XYZ123
+2025-08-11 20:09:06,394 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:06,397 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:06,397 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:06,397 - agent - INFO - Auto-triggering research for unsupported equipment: Unknown XYZ123
+2025-08-11 20:09:06,398 - agent - INFO - Parsing equipment details for: Unknown XYZ123...
+2025-08-11 20:09:06,398 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:06,401 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:06,401 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:06,401 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:06,403 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:06,403 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:06,403 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:06,406 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:06,406 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:06,406 - agent - INFO - Enhanced heuristic extracted model: XYZ123
+2025-08-11 20:09:06,406 - agent - INFO - Extracted manufacturer from prefix: Unknown
+2025-08-11 20:09:06,406 - agent - INFO - Parsed equipment in 0.01s: Unknown/XYZ123 via heuristic_enhanced
+2025-08-11 20:09:06,407 - agent - INFO - Performing new async search for: Unknown XYZ123
+2025-08-11 20:09:06,407 - agent - INFO - Performing new async search for: Unknown XYZ123 datasheet
+2025-08-11 20:09:06,407 - agent - INFO - Performing new async search for: Unknown XYZ123 manual
+2025-08-11 20:09:06,408 - agent - INFO - Performing new async search for: Unknown XYZ123 specifications
+2025-08-11 20:09:07,450 - agent - INFO - Async search API call completed in 1.04s
+2025-08-11 20:09:07,451 - agent - INFO - Cached search result for: Unknown XYZ123 datasheet
+2025-08-11 20:09:07,463 - agent - INFO - Async search API call completed in 1.06s
+2025-08-11 20:09:07,463 - agent - INFO - Cached search result for: Unknown XYZ123 manual
+2025-08-11 20:09:07,466 - agent - INFO - Async search API call completed in 1.06s
+2025-08-11 20:09:07,466 - agent - INFO - Cached search result for: Unknown XYZ123
+2025-08-11 20:09:07,742 - agent - INFO - Async search API call completed in 1.33s
+2025-08-11 20:09:07,742 - agent - INFO - Cached search result for: Unknown XYZ123 specifications
+2025-08-11 20:09:07,744 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:07,747 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:07,747 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:07,748 - agent - INFO - Parsing equipment details for: Unknown XYZ123...
+2025-08-11 20:09:07,748 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:07,750 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:07,750 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:07,750 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:07,754 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:07,754 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:07,754 - agent - INFO - Loading equipment data from database
+2025-08-11 20:09:07,756 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:09:07,756 - agent - ERROR - Error loading equipment data: no such column: level4_only
+2025-08-11 20:09:07,756 - agent - INFO - Enhanced heuristic extracted model: XYZ123
+2025-08-11 20:09:07,756 - agent - INFO - Extracted manufacturer from prefix: Unknown
+2025-08-11 20:09:07,756 - agent - INFO - Parsed equipment in 0.01s: Unknown/XYZ123 via heuristic_enhanced
+2025-08-11 20:09:07,757 - agent - INFO - Concurrent tool execution completed in 1.36s
+2025-08-11 20:09:10,686 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:09:10,698 - agent - INFO - Agent completed processing in 6.04s after 3 steps
+2025-08-11 20:09:10,699 - agent - INFO - Async chat session completed in 6.04s, response length: 574 chars
+2025-08-11 20:41:44,588 - agent - INFO - Async chat session started with input: TEKTRONIX TDS3012B...
+2025-08-11 20:41:44,874 - agent - INFO - Agent processing 2 messages
+2025-08-11 20:41:45,952 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:45,968 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-11 20:41:45,968 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:41:45,970 - agent - INFO - Parsing equipment details for: TEKTRONIX TDS3012B...
+2025-08-11 20:41:45,970 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:46,908 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:46,911 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-11 20:41:46,911 - agent - INFO - Initialized database connection pool
+2025-08-11 20:41:46,913 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:46,913 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:46,915 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:46,915 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:46,915 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:46,918 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:46,918 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:46,918 - agent - INFO - Enhanced heuristic extracted model: TDS3012B
+2025-08-11 20:41:46,918 - agent - INFO - Extracted manufacturer from prefix: TEKTRONIX
+2025-08-11 20:41:46,918 - agent - INFO - Parsed equipment in 0.95s: TEKTRONIX/TDS3012B via heuristic_enhanced
+2025-08-11 20:41:46,920 - agent - INFO - Concurrent tool execution completed in 0.95s
+2025-08-11 20:41:47,746 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:47,752 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-11 20:41:47,753 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:41:47,754 - agent - INFO - Checking lab capability for: TEKTRONIX/TDS3012B
+2025-08-11 20:41:47,754 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:47,757 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:47,757 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:47,757 - agent - INFO - Auto-triggering research for unsupported equipment: TEKTRONIX TDS3012B
+2025-08-11 20:41:47,758 - agent - INFO - Parsing equipment details for: TEKTRONIX TDS3012B...
+2025-08-11 20:41:47,758 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:47,760 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:47,760 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:47,760 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:47,763 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:47,763 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:47,763 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:47,764 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:47,766 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:47,766 - agent - INFO - Enhanced heuristic extracted model: TDS3012B
+2025-08-11 20:41:47,766 - agent - INFO - Extracted manufacturer from prefix: TEKTRONIX
+2025-08-11 20:41:47,766 - agent - INFO - Parsed equipment in 0.01s: TEKTRONIX/TDS3012B via heuristic_enhanced
+2025-08-11 20:41:47,766 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B
+2025-08-11 20:41:47,767 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B datasheet
+2025-08-11 20:41:47,767 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B manual
+2025-08-11 20:41:47,768 - agent - INFO - Performing new async search for: TEKTRONIX TDS3012B specifications
+2025-08-11 20:41:48,575 - agent - INFO - Async search API call completed in 0.81s
+2025-08-11 20:41:48,575 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B specifications
+2025-08-11 20:41:48,625 - agent - INFO - Async search API call completed in 0.86s
+2025-08-11 20:41:48,626 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B
+2025-08-11 20:41:48,738 - agent - INFO - Async search API call completed in 0.97s
+2025-08-11 20:41:48,739 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B manual
+2025-08-11 20:41:48,839 - agent - INFO - Async search API call completed in 1.07s
+2025-08-11 20:41:48,839 - agent - INFO - Cached search result for: TEKTRONIX TDS3012B datasheet
+2025-08-11 20:41:48,845 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:48,847 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:48,848 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:48,850 - agent - INFO - Parsing equipment details for: TEKTRONIX TDS3012B...
+2025-08-11 20:41:48,850 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:48,853 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:48,853 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:48,853 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:48,856 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:48,856 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:48,856 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:48,858 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:48,858 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:48,859 - agent - INFO - Enhanced heuristic extracted model: TDS3012B
+2025-08-11 20:41:48,859 - agent - INFO - Extracted manufacturer from prefix: TEKTRONIX
+2025-08-11 20:41:48,859 - agent - INFO - Parsed equipment in 0.01s: TEKTRONIX/TDS3012B via heuristic_enhanced
+2025-08-11 20:41:48,860 - agent - INFO - Concurrent tool execution completed in 1.11s
+2025-08-11 20:41:50,590 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:50,598 - agent - INFO - Agent completed processing in 5.72s after 3 steps
+2025-08-11 20:41:50,600 - agent - INFO - Async chat session completed in 6.01s, response length: 406 chars
+2025-08-11 20:41:50,601 - agent - INFO - Async chat session started with input: Keysight 34401A...
+2025-08-11 20:41:50,602 - agent - INFO - Agent processing 2 messages
+2025-08-11 20:41:51,767 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:51,770 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-11 20:41:51,770 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:41:51,772 - agent - INFO - Parsing equipment details for: Keysight 34401A...
+2025-08-11 20:41:51,772 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:51,775 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:51,775 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:51,775 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:51,778 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:51,778 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:51,778 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:51,780 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:51,781 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:51,781 - agent - INFO - Enhanced heuristic extracted model: 34401A
+2025-08-11 20:41:51,781 - agent - INFO - Extracted manufacturer from prefix: Keysight
+2025-08-11 20:41:51,782 - agent - INFO - Parsed equipment in 0.01s: Keysight/34401A via heuristic_enhanced
+2025-08-11 20:41:51,782 - agent - INFO - Concurrent tool execution completed in 0.01s
+2025-08-11 20:41:52,664 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:52,666 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-11 20:41:52,667 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:41:52,668 - agent - INFO - Checking lab capability for: Keysight/34401A
+2025-08-11 20:41:52,668 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:52,670 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:52,670 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:52,670 - agent - INFO - Auto-triggering research for unsupported equipment: Keysight 34401A
+2025-08-11 20:41:52,672 - agent - INFO - Parsing equipment details for: Keysight 34401A...
+2025-08-11 20:41:52,672 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:52,675 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:52,675 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:52,675 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:52,677 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:52,678 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:52,678 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:52,681 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:52,681 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:52,681 - agent - INFO - Enhanced heuristic extracted model: 34401A
+2025-08-11 20:41:52,681 - agent - INFO - Extracted manufacturer from prefix: Keysight
+2025-08-11 20:41:52,681 - agent - INFO - Parsed equipment in 0.01s: Keysight/34401A via heuristic_enhanced
+2025-08-11 20:41:52,683 - agent - INFO - Performing new async search for: Keysight 34401A
+2025-08-11 20:41:52,683 - agent - INFO - Performing new async search for: Keysight 34401A datasheet
+2025-08-11 20:41:52,683 - agent - INFO - Performing new async search for: Keysight 34401A manual
+2025-08-11 20:41:52,684 - agent - INFO - Performing new async search for: Keysight 34401A specifications
+2025-08-11 20:41:53,292 - agent - INFO - Async search API call completed in 0.61s
+2025-08-11 20:41:53,292 - agent - INFO - Cached search result for: Keysight 34401A datasheet
+2025-08-11 20:41:53,349 - agent - INFO - Async search API call completed in 0.67s
+2025-08-11 20:41:53,350 - agent - INFO - Cached search result for: Keysight 34401A
+2025-08-11 20:41:53,593 - agent - INFO - Async search API call completed in 0.91s
+2025-08-11 20:41:53,593 - agent - INFO - Cached search result for: Keysight 34401A specifications
+2025-08-11 20:41:53,835 - agent - INFO - Async search API call completed in 1.15s
+2025-08-11 20:41:53,835 - agent - INFO - Cached search result for: Keysight 34401A manual
+2025-08-11 20:41:53,838 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:53,842 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:53,842 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:53,842 - agent - INFO - Parsing equipment details for: Keysight 34401A...
+2025-08-11 20:41:53,843 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:53,845 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:53,845 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:53,845 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:53,848 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:53,848 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:53,848 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:53,850 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:53,852 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:53,852 - agent - INFO - Enhanced heuristic extracted model: 34401A
+2025-08-11 20:41:53,852 - agent - INFO - Extracted manufacturer from prefix: Keysight
+2025-08-11 20:41:53,852 - agent - INFO - Parsed equipment in 0.01s: Keysight/34401A via heuristic_enhanced
+2025-08-11 20:41:53,852 - agent - INFO - Concurrent tool execution completed in 1.19s
+2025-08-11 20:41:55,876 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:55,886 - agent - INFO - Agent completed processing in 5.28s after 3 steps
+2025-08-11 20:41:55,887 - agent - INFO - Async chat session completed in 5.29s, response length: 465 chars
+2025-08-11 20:41:55,887 - agent - INFO - Async chat session started with input: Unknown XYZ123...
+2025-08-11 20:41:55,889 - agent - INFO - Agent processing 2 messages
+2025-08-11 20:41:57,194 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:57,203 - agent - INFO - Step 1: Executing 1 tools concurrently
+2025-08-11 20:41:57,204 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:41:57,204 - agent - INFO - Parsing equipment details for: Unknown XYZ123...
+2025-08-11 20:41:57,204 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:57,209 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:57,209 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:57,209 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:57,212 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:57,212 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:57,212 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:57,215 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:57,215 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:57,215 - agent - INFO - Enhanced heuristic extracted model: XYZ123
+2025-08-11 20:41:57,216 - agent - INFO - Extracted manufacturer from prefix: Unknown
+2025-08-11 20:41:57,216 - agent - INFO - Parsed equipment in 0.01s: Unknown/XYZ123 via heuristic_enhanced
+2025-08-11 20:41:57,216 - agent - INFO - Concurrent tool execution completed in 0.01s
+2025-08-11 20:41:58,927 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:41:58,929 - agent - INFO - Step 2: Executing 1 tools concurrently
+2025-08-11 20:41:58,930 - agent - INFO - Executing 1 tools concurrently
+2025-08-11 20:41:58,931 - agent - INFO - Checking lab capability for: Unknown/XYZ123
+2025-08-11 20:41:58,931 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:58,935 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:58,935 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:58,935 - agent - INFO - Auto-triggering research for unsupported equipment: Unknown XYZ123
+2025-08-11 20:41:58,936 - agent - INFO - Parsing equipment details for: Unknown XYZ123...
+2025-08-11 20:41:58,936 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:58,939 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:58,939 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:58,939 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:58,943 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:58,943 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:58,943 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:58,946 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:58,946 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:58,946 - agent - INFO - Enhanced heuristic extracted model: XYZ123
+2025-08-11 20:41:58,946 - agent - INFO - Extracted manufacturer from prefix: Unknown
+2025-08-11 20:41:58,946 - agent - INFO - Parsed equipment in 0.01s: Unknown/XYZ123 via heuristic_enhanced
+2025-08-11 20:41:58,947 - agent - INFO - Performing new async search for: Unknown XYZ123
+2025-08-11 20:41:58,948 - agent - INFO - Performing new async search for: Unknown XYZ123 datasheet
+2025-08-11 20:41:58,948 - agent - INFO - Performing new async search for: Unknown XYZ123 manual
+2025-08-11 20:41:58,948 - agent - INFO - Performing new async search for: Unknown XYZ123 specifications
+2025-08-11 20:41:59,709 - agent - INFO - Async search API call completed in 0.76s
+2025-08-11 20:41:59,709 - agent - INFO - Cached search result for: Unknown XYZ123
+2025-08-11 20:41:59,824 - agent - INFO - Async search API call completed in 0.88s
+2025-08-11 20:41:59,824 - agent - INFO - Cached search result for: Unknown XYZ123 manual
+2025-08-11 20:41:59,904 - agent - INFO - Async search API call completed in 0.96s
+2025-08-11 20:41:59,906 - agent - INFO - Cached search result for: Unknown XYZ123 datasheet
+2025-08-11 20:41:59,906 - agent - INFO - Async search API call completed in 0.96s
+2025-08-11 20:41:59,906 - agent - INFO - Cached search result for: Unknown XYZ123 specifications
+2025-08-11 20:41:59,910 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:59,913 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:59,913 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:59,916 - agent - INFO - Parsing equipment details for: Unknown XYZ123...
+2025-08-11 20:41:59,916 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:59,918 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:59,918 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:59,919 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:59,921 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:59,921 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:59,921 - agent - INFO - Loading equipment data from database
+2025-08-11 20:41:59,924 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 20:41:59,924 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 20:41:59,924 - agent - INFO - Enhanced heuristic extracted model: XYZ123
+2025-08-11 20:41:59,924 - agent - INFO - Extracted manufacturer from prefix: Unknown
+2025-08-11 20:41:59,924 - agent - INFO - Parsed equipment in 0.01s: Unknown/XYZ123 via heuristic_enhanced
+2025-08-11 20:41:59,926 - agent - INFO - Concurrent tool execution completed in 1.00s
+2025-08-11 20:42:01,790 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-11 20:42:01,797 - agent - INFO - Agent completed processing in 5.91s after 3 steps
+2025-08-11 20:42:01,798 - agent - INFO - Async chat session completed in 5.91s, response length: 444 chars
+2025-08-11 21:38:36,624 - agent - INFO - Parsing equipment details for: lecroy wavemaster 8000hd...
+2025-08-11 21:38:36,624 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,924 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,926 - agent - INFO - Initialized SQLite connection pool with 3 connections
+2025-08-11 21:38:36,926 - agent - INFO - Initialized database connection pool
+2025-08-11 21:38:36,926 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,926 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,928 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,929 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,929 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,931 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,931 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,931 - agent - INFO - Enhanced heuristic extracted model: 8000HD
+2025-08-11 21:38:36,933 - agent - INFO - Extracted manufacturer from prefix: lecroy wavemaster
+2025-08-11 21:38:36,933 - agent - INFO - Parsed equipment in 0.31s: lecroy wavemaster/8000HD via heuristic_enhanced
+2025-08-11 21:38:36,935 - agent - INFO - Checking lab capability for: lecroy wavemaster/8000HD
+2025-08-11 21:38:36,935 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,937 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,938 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,938 - agent - INFO - Auto-triggering research for unsupported equipment: lecroy wavemaster 8000HD
+2025-08-11 21:38:36,939 - agent - INFO - Parsing equipment details for: lecroy wavemaster 8000HD...
+2025-08-11 21:38:36,939 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,941 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,942 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,942 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,944 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,945 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,945 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:36,947 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:36,947 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:36,947 - agent - INFO - Enhanced heuristic extracted model: 8000HD
+2025-08-11 21:38:36,947 - agent - INFO - Extracted manufacturer from prefix: lecroy wavemaster
+2025-08-11 21:38:36,947 - agent - INFO - Parsed equipment in 0.01s: lecroy wavemaster/8000HD via heuristic_enhanced
+2025-08-11 21:38:36,948 - agent - INFO - Performing new async search for: lecroy wavemaster 8000HD
+2025-08-11 21:38:36,949 - agent - INFO - Performing new async search for: lecroy wavemaster 8000HD datasheet
+2025-08-11 21:38:36,949 - agent - INFO - Performing new async search for: lecroy wavemaster 8000HD manual
+2025-08-11 21:38:36,950 - agent - INFO - Performing new async search for: lecroy wavemaster 8000HD specifications
+2025-08-11 21:38:37,678 - agent - INFO - Async search API call completed in 0.73s
+2025-08-11 21:38:37,679 - agent - INFO - Cached search result for: lecroy wavemaster 8000HD specifications
+2025-08-11 21:38:37,761 - agent - INFO - Async search API call completed in 0.81s
+2025-08-11 21:38:37,761 - agent - INFO - Cached search result for: lecroy wavemaster 8000HD
+2025-08-11 21:38:38,062 - agent - INFO - Async search API call completed in 1.11s
+2025-08-11 21:38:38,063 - agent - INFO - Cached search result for: lecroy wavemaster 8000HD datasheet
+2025-08-11 21:38:40,058 - agent - INFO - Async search API call completed in 3.11s
+2025-08-11 21:38:40,059 - agent - INFO - Cached search result for: lecroy wavemaster 8000HD manual
+2025-08-11 21:38:40,064 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:40,067 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:40,067 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:40,067 - agent - INFO - Parsing equipment details for: lecroy wavemaster 8000HD...
+2025-08-11 21:38:40,068 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:40,070 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:40,071 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:40,071 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:40,073 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:40,073 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:40,073 - agent - INFO - Loading equipment data from database
+2025-08-11 21:38:40,076 - agent - INFO - Loaded 92 manufacturer aliases
+2025-08-11 21:38:40,076 - agent - ERROR - Error loading equipment data: no such column: comments
+2025-08-11 21:38:40,076 - agent - INFO - Enhanced heuristic extracted model: 8000HD
+2025-08-11 21:38:40,076 - agent - INFO - Extracted manufacturer from prefix: lecroy wavemaster
+2025-08-11 21:38:40,076 - agent - INFO - Parsed equipment in 0.01s: lecroy wavemaster/8000HD via heuristic_enhanced

@@ -558,6 +558,49 @@ def _collapse_alnum(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "", str(value)).upper()
 
 
+def _is_valid_model_match(query_norm: str, db_model_norm: str) -> bool:
+    """
+    Determine if a query model should match a database model using strict criteria.
+    
+    This prevents false positives like "WAVEMASTER8000HD" matching "WAVEMASTER8131B".
+    
+    Args:
+        query_norm: Normalized query model (e.g., "WAVEMASTER8000HD")
+        db_model_norm: Normalized database model (e.g., "WAVEMASTER8131B")
+    
+    Returns:
+        True if this is a valid match, False otherwise
+    """
+    if not query_norm or not db_model_norm:
+        return False
+    
+    # Exact match - always valid
+    if query_norm == db_model_norm:
+        return True
+    
+    # Length requirements for partial matching
+    query_len = len(query_norm)
+    db_len = len(db_model_norm)
+    
+    # Special case first: Allow suffix matching for model variants (like "A", "B", "C")
+    # Allow if query is at least 5 chars and missing only 1-2 characters at the end
+    if query_len >= 5 and db_len - query_len <= 2 and db_model_norm.startswith(query_norm):
+        return True
+    
+    # For longer differences, only allow partial matches if query is significantly shorter
+    # This prevents "WAVEMASTER8000HD" from matching similar length models
+    if query_len >= db_len * 0.8:  # Query is >= 80% of DB model length
+        return False  # Too similar in length - require exact match
+    
+    # For shorter queries, allow prefix matching only if:
+    # 1. Query is at least 6 characters (avoid matching too short queries)
+    # 2. DB model starts with the query
+    if query_len >= 6 and db_model_norm.startswith(query_norm):
+        return True
+    
+    return False
+
+
 def _tokenize_simple(text: str) -> List[str]:
     if not text:
         return []
@@ -847,7 +890,34 @@ def _load_equipment_data() -> None:
 
         conn = _get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT manufacturer, model, description, accredited FROM equipment")
+        # Check if level4_only column exists (graceful handling for older DBs)
+        try:
+            cur.execute("PRAGMA table_info(equipment)")
+            columns = [row[1] for row in cur.fetchall()]
+            has_level4_only = 'level4_only' in columns
+        except Exception:
+            has_level4_only = False
+        
+        if has_level4_only:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       COALESCE(level4_only, 0) AS level4_only,
+                       COALESCE(comments, '') AS comments,
+                       price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
+        else:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       0 AS level4_only,
+                       COALESCE(comments, '') AS comments,
+                       price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
         rows = cur.fetchall()
         
         logger.info(f"Processing {len(rows)} equipment records")
@@ -857,6 +927,11 @@ def _load_equipment_data() -> None:
             model_num = (r["model"] or "").strip()
             description = r["description"] or ""
             accredited = int(r["accredited"]) if r["accredited"] is not None else 0
+            level4_only = int(r["level4_only"]) if r["level4_only"] is not None else 0
+            comments = (r["comments"] or "").strip()
+            price_l1 = r["price_level1"] if r["price_level1"] is not None else None
+            price_l2 = r["price_level2"] if r["price_level2"] is not None else None
+            price_l3 = r["price_level3"] if r["price_level3"] is not None else None
 
             if not manufacturer or not model_num:
                 continue
@@ -877,6 +952,11 @@ def _load_equipment_data() -> None:
                 "model_num": model_num,
                 "gage_descr": description,
                 "accredited": accredited,
+                "level4_only": level4_only,
+                "comments": comments,
+                "price_level1": price_l1,
+                "price_level2": price_l2,
+                "price_level3": price_l3,
             })
 
         execution_time = time.time() - start_time
@@ -967,7 +1047,7 @@ def _find_model_for_manufacturer(text: str, manufacturer: str) -> Optional[str]:
         if not model:
             continue
         model_norm = _collapse_alnum(model)
-        if model_norm and model_norm in text_norm:
+        if model_norm and _is_valid_model_match(text_norm, model_norm):
             return model
     return None
 
@@ -992,7 +1072,7 @@ def _find_model_any_manufacturer(text: str) -> Tuple[Optional[str], Optional[str
             m_norm = _collapse_alnum(model)
             if not m_norm or not text_norm:
                 continue
-            if m_norm.startswith(text_norm) or m_norm == text_norm:
+            if _is_valid_model_match(text_norm, m_norm):
                 candidates.append((rec.get("manufacturer"), model))
                 manufacturers.append(rec.get("manufacturer"))
 
@@ -1167,7 +1247,7 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
             else:
                 matches = recs
 
-        # If no exact model match, try partial/normalized match
+        # If no exact model match, try stricter partial/normalized match
         if not matches and model:
             text_norm = _collapse_alnum(model)
             if canonical_manu:
@@ -1176,7 +1256,7 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
                     if not m:
                         continue
                     m_norm = _collapse_alnum(m)
-                    if m_norm and (m_norm.startswith(text_norm) or m_norm == text_norm):
+                    if m_norm and _is_valid_model_match(text_norm, m_norm):
                         matches.extend(_MODEL_TO_RECORDS.get(_normalize_text(m), []))
             else:
                 # Search across all manufacturers
@@ -1186,7 +1266,7 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
                         if not m:
                             continue
                         m_norm = _collapse_alnum(m)
-                        if m_norm and (m_norm.startswith(text_norm) or m_norm == text_norm):
+                        if m_norm and _is_valid_model_match(text_norm, m_norm):
                             matches.append(rec)
 
         if not matches:
@@ -1248,26 +1328,54 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
                 continue
             seen.add(key)
             manufacturers_seen.add(rec.get("manufacturer"))
-            match_items.append({
-                "manufacturer": rec.get("manufacturer"),
-                "model": rec.get("model_num"),
-                "description": rec.get("gage_descr"),
-                "accredited": int(rec.get("accredited", 0)),
-            })
+            # Standardized equipment summary output
+            accredited_bool = bool(int(rec.get("accredited", 0)))
+            level4_only_bool = bool(int(rec.get("level4_only", 0))) if rec.get("level4_only") is not None else False
+            comments_val = (rec.get("comments") or "").strip()
+
+            summary_obj = {
+                "type": "equipment_summary",
+                "reference": {
+                    "manufacturer": rec.get("manufacturer"),
+                    "model": rec.get("model_num"),
+                },
+                "description": rec.get("gage_descr") or "",
+                "accreditation": {
+                    "accredited": accredited_bool
+                }
+            }
+            if level4_only_bool:
+                summary_obj["accreditation"]["level_4"] = True
+            if comments_val:
+                summary_obj["comments"] = comments_val
+
+            match_items.append(summary_obj)
 
         supported = len(match_items) > 0
-        accredited_any = any(int(m["accredited"]) == 1 for m in match_items)
+        accredited_any = any(m.get("accreditation", {}).get("accredited", False) for m in match_items)
+        # Aggregate convenience flags for downstream presentation
+        level4_any = any(m.get("accreditation", {}).get("level_4", False) for m in match_items)
+        comments_list = [m.get("comments", "").strip() for m in match_items if (m.get("comments") or "").strip()]
+        comments_summary = "; ".join(dict.fromkeys([c for c in comments_list if c]))[:300] if comments_list else ""
         ambiguous = len(manufacturers_seen) > 1 and not canonical_manu
 
         # Human-readable summary per requested phrasing
         if supported and accredited_any:
             first = match_items[0]
-            summary = f"The equipment {first['manufacturer']} {first['model']} is supported and can be given accredited calibration (Level 1)."
+            ref = first.get("reference", {}) if isinstance(first, dict) else {}
+            summary = f"The equipment {ref.get('manufacturer','')} {ref.get('model','')} is supported and can be given accredited calibration."
         elif supported and not accredited_any:
             first = match_items[0]
-            summary = f"The equipment {first['manufacturer']} {first['model']} is supported, but not at Level 1."
+            ref = first.get("reference", {}) if isinstance(first, dict) else {}
+            summary = f"The equipment {ref.get('manufacturer','')} {ref.get('model','')} is supported, but not accredited."
         else:
             summary = "The equipment is not supported in Tescom's database."
+
+        # Append Level 4 and comments context when present
+        if supported and level4_any:
+            summary += " Note: Level 4 Only."
+        if supported and comments_summary:
+            summary += f" Comments: {comments_summary}"
 
         execution_time = time.time() - start_time
         logger.info(f"Capability check completed in {execution_time:.2f}s: {len(match_items)} matches, supported={supported}")
@@ -1276,6 +1384,8 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
             "supported": bool(supported),
             "accredited_level1": bool(accredited_any) if supported else None,
             "matches": match_items,
+            "level4_only_any": bool(level4_any) if supported else None,
+            "comments": comments_summary if supported else "",
             "resolved": {
                 "manufacturer": canonical_manu if canonical_manu else None,
                 "model_query": model or "",
@@ -1288,138 +1398,13 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
         return json.dumps({"error": f"Error checking capability: {str(e)}"})
 
 
+# Note: _build_compact_equipment_summary function removed
+# The LLM now directly generates the required JSON structure based on system prompt instructions
+
 ############################
-# Update agent tools (JSON editor)
-############################
-
-def _atomic_write_json(path: str, data: Any) -> None:
-    import tempfile
-    import shutil
-    directory = os.path.dirname(path)
-    os.makedirs(directory, exist_ok=True)
-    with tempfile.NamedTemporaryFile("w", delete=False, dir=directory, encoding="utf-8") as tmp:
-        json.dump(data, tmp, ensure_ascii=False, indent=2)
-        tmp.flush()
-        os.fsync(tmp.fileno())
-        temp_path = tmp.name
-    shutil.move(temp_path, path)
-
-
-def _backup_json(path: str) -> str:
-    from datetime import datetime
-    base_dir = os.path.dirname(path)
-    backups_dir = os.getenv('BACKUPS_DIR', os.path.join(base_dir, "backups"))
-    os.makedirs(backups_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
-    backup_path = os.path.join(backups_dir, f"tescom_equip_list.{ts}.json")
-    with open(path, "r", encoding="utf-8") as fsrc, open(backup_path, "w", encoding="utf-8") as fdst:
-        fdst.write(fsrc.read())
-    return backup_path
-
-
-def _append_change_log(entry: Dict[str, Any]) -> None:
-    from datetime import datetime
-    entry = dict(entry)
-    entry["timestamp"] = datetime.utcnow().isoformat() + "Z"
-    log_path = os.path.join(LOG_DIR, "capability_changes.log")
-    line = json.dumps(entry, ensure_ascii=False)
-    with open(log_path, "a", encoding="utf-8") as f:
-        f.write(line + "\n")
-
-
-@tool
-def parse_update_request(request_text: str) -> str:
-    """Parse a free-text capability update like 'Keysight 34401A is accredited' or 'Fluke 8508A not accredited'.
-    Returns JSON: {manufacturer, model, new_accredited} where new_accredited is 0 or 1.
-    """
-    try:
-        text = request_text.strip()
-        # Determine accredited intent
-        new_accredited: Optional[int] = None
-        if re.search(r"\bnot\s+accredit(ed|able)?\b", text, flags=re.IGNORECASE):
-            new_accredited = 0
-        elif re.search(r"\b(non[- ]?accredited|unaccredited)\b", text, flags=re.IGNORECASE):
-            new_accredited = 0
-        elif re.search(r"\b(accredited|accreditable|can\s+be\s+accredited)\b", text, flags=re.IGNORECASE):
-            new_accredited = 1
-        elif re.search(r"\b(no)\b", text, flags=re.IGNORECASE):
-            new_accredited = 0
-        elif re.search(r"\b(yes)\b", text, flags=re.IGNORECASE):
-            new_accredited = 1
-
-        # Reuse existing parsing for manufacturer/model
-        parsed = json.loads(parse_equipment_details.invoke({"user_text": request_text}))
-        manufacturer = parsed.get("manufacturer")
-        model = parsed.get("model")
-
-        return json.dumps({
-            "manufacturer": manufacturer,
-            "model": model,
-            "new_accredited": new_accredited,
-        })
-    except Exception as e:
-        return json.dumps({"error": str(e)})
-
-
-@tool
-def apply_update(manufacturer: str, model: str, new_accredited: int, user_name: str, password: str) -> str:
-    """Apply an accredited flag update in equipment.db after password check.
-    Password is 'bigbrain' (case-insensitive). new_accredited must be 0 or 1.
-    Returns a concise summary of changes or an error.
-    """
-    try:
-        if not password or password.lower().strip() != "bigbrain":
-            return "Error: Invalid password."
-        if new_accredited not in (0, 1):
-            return "Error: new_accredited must be 0 or 1."
-        if not manufacturer or not model:
-            return "Error: manufacturer and model are required."
-
-        # Normalize and apply aliases consistent with DB norms
-        try:
-            from build_equipment_db import load_aliases, apply_manufacturer_alias, apply_model_alias, normalize_manufacturer, normalize_model
-        except Exception as e:
-            return f"Error: cannot import alias helpers: {e}"
-
-        aliases = load_aliases(Path(_DB_PATH).parent)
-        manu_canon = apply_manufacturer_alias(manufacturer, aliases)
-        manu_norm = normalize_manufacturer(manu_canon)
-        model_norm = normalize_model(model)
-        model_norm = apply_model_alias(manu_norm, model_norm, aliases)
-
-        conn = None
-        try:
-            conn = _get_db_connection()
-            cur = conn.cursor()
-            cur.execute(
-                "UPDATE equipment SET accredited = ? WHERE manufacturer_norm = ? AND model_norm = ?",
-                (int(new_accredited), manu_norm, model_norm),
-            )
-            changed = cur.rowcount
-            conn.commit()
-            logger.info(f"Database update completed: {changed} rows affected")
-        finally:
-            if conn:
-                _return_db_connection(conn)
-
-        if changed == 0:
-            return f"No records found for {manu_canon} {model}. No changes applied."
-
-        _append_change_log({
-            "action": "update_accredited",
-            "user": user_name or "unknown",
-            "manufacturer": manu_canon,
-            "model": model,
-            "new_accredited": int(new_accredited),
-            "rows_updated": int(changed),
-        })
-
-        # Invalidate caches so next lookup reflects changes
-        _invalidate_equipment_cache()
-
-        return f"Updated accredited={int(new_accredited)} for {int(changed)} record(s) matching {manu_canon} {model}."
-    except Exception as e:
-        return f"Error applying update: {str(e)}"
+# Removed: DB update/edit tools (parse_update_request, apply_update)
+# Reason: Editing will be handled by an external mechanism. Core agent
+# capability checks and research tools remain intact.
 
 
 # Initialize the LLM with tools
@@ -1432,30 +1417,13 @@ llm = ChatOpenAI(
     max_tokens=300,
 )
 
-# Update agent LLM (higher-accuracy model)
-update_llm = ChatOpenAI(
-    model="gpt-4.1",
-    temperature=0.0,
-    api_key=os.getenv("OPENAI_API_KEY"),
-    max_retries=1,
-    timeout=45,
-)
 
-# Bind tools to the orchestrator LLM
+# Bind tools to the orchestrator LLM (no DB update tools)
 llm_with_tools = llm.bind_tools([
     get_current_time,
     google_search,
     parse_equipment_details,
     check_lab_capability,
-    # Orchestrator will also be able to trigger parsing updates, but not apply them directly
-    parse_update_request,
-    apply_update,
-])
-
-# Bind tools to the update LLM
-update_llm_with_tools = update_llm.bind_tools([
-    parse_update_request,
-    apply_update,
 ])
 
 # Define the state structure using TypedDict for better compatibility
@@ -1494,18 +1462,7 @@ async def execute_tool_async(tool_call: Dict[str, Any]) -> str:
                 "manufacturer": args.get("manufacturer", ""),
                 "model": args.get("model", ""),
             })
-        elif name == "parse_update_request":
-            return parse_update_request.invoke({
-                "request_text": args.get("request_text", "")
-            })
-        elif name == "apply_update":
-            return apply_update.invoke({
-                "manufacturer": args.get("manufacturer", ""),
-                "model": args.get("model", ""),
-                "new_accredited": args.get("new_accredited", 0),
-                "user_name": args.get("user_name", ""),
-                "password": args.get("password", ""),
-            })
+        # Database update tools removed
         else:
             return f"Tool '{name}' not recognized."
     except Exception as e:
@@ -1578,16 +1535,6 @@ def agent_function(state: AgentState) -> AgentState:
             
             # Add tool results as ToolMessages
             for tool_call, tool_result in tool_results:
-                # Handle auto-triggered research for unsupported equipment
-                if tool_call.get("name") == "check_lab_capability":
-                    try:
-                        parsed = json.loads(tool_result)
-                        if isinstance(parsed, dict) and not parsed.get("supported"):
-                            # Auto-trigger research - but this should be handled by the LLM in the next step
-                            pass
-                    except Exception:
-                        pass
-                
                 # Echo tool results as ToolMessage so UI can show progress
                 messages.append(ToolMessage(
                     content=tool_result,
@@ -1613,18 +1560,7 @@ def agent_function(state: AgentState) -> AgentState:
                         "manufacturer": args.get("manufacturer", ""),
                         "model": args.get("model", ""),
                     })
-                elif name == "parse_update_request":
-                    tool_result = parse_update_request.invoke({
-                        "request_text": args.get("request_text", "")
-                    })
-                elif name == "apply_update":
-                    tool_result = apply_update.invoke({
-                        "manufacturer": args.get("manufacturer", ""),
-                        "model": args.get("model", ""),
-                        "new_accredited": args.get("new_accredited", 0),
-                        "user_name": args.get("user_name", ""),
-                        "password": args.get("password", ""),
-                    })
+                # Database update tools removed
                 else:
                     tool_result = f"Tool '{name}' not recognized."
 
@@ -1976,11 +1912,39 @@ async def chat_with_agent_async(user_input: str, conversation_history: list = No
         "You are a metrology lab capabilities assistant and orchestrator."
         " Primary intents: \n"
         " - Capability check: parse equipment and check against Tescom list via tools.\n"
-        " - Database update: only proceed when the user explicitly asks to 'update database' or equivalent.\n"
-        "Update flow: Confirm intent, ask what to update, call 'parse_update_request' to extract manufacturer, model, and new level. Then ask for the user's name and the password. Only after getting both, pass values to 'apply_update'.\n"
-        "Password is required and case-insensitive ('bigbrain'). Keep questions concise.\n"
-        "When the capability check returns supported=false and includes 'fallback_research', ALWAYS include the following in your reply: a short 'Description:' using fallback_research.description, and a 'Likely Measurement Functions:' sentence using fallback_research.functions_summary. Also include the overlaps list from fallback_research.overlaps if present, and clearly state whether calibration support is likely based on fallback_research.summary. "
-        "IMPORTANT: If fallback_research.likely_supported is True AND there are overlaps in fallback_research.overlaps, then calibration support is LIKELY and you should emphasize this positive conclusion."
+        " - Do not perform database edits. If the user asks to modify the database, politely explain that updates are handled via a separate process.\n"
+        "\n"
+        "CRITICAL: Always output your final response in this exact structured format:\n"
+        "\n"
+        "For SUPPORTED equipment with accredited=true:\n"
+        "The equipment {MANUFACTURER} {MODEL} is supported and can be given accredited calibration.\n"
+        "\n"
+        "Accredited: Yes\n"
+        "Level 4 Only  (include this line ONLY if level4_only=true)\n"
+        "Comments: {comments}  (include this line ONLY if comments exist)\n"
+        "\n"
+        "For SUPPORTED equipment with accredited=false:\n"
+        "The equipment {MANUFACTURER} {MODEL} is supported but does not have accreditation for calibration.\n"
+        "\n"
+        "Accredited: No\n"
+        "Comments: {comments}  (include this line ONLY if comments exist)\n"
+        "\n"
+        "For UNSUPPORTED equipment:\n"
+        "The equipment {MANUFACTURER} {MODEL} is not supported in Tescom's database.\n"
+        "\n"
+        "Accredited: No\n"
+        "\n"
+        "Based on research, this equipment appears to be [likely/unlikely] to be supported because [reasoning about characteristics or similar equipment types that Tescom supports].\n"
+        "\n"
+        "Rules for output formatting:\n"
+        "- Use the manufacturer and model from tool results when available\n"
+        "- For supported equipment with accredited=true: Use the 'can be given accredited calibration' format and show 'Accredited: Yes'\n"
+        "- For supported equipment with accredited=false: Use the 'does not have accreditation for calibration' format and show 'Accredited: No'\n"
+        "- Include 'Level 4 Only' line ONLY if tool results show level4_only=true\n"
+        "- Include 'Comments:' line ONLY if there are actual comments from tool results\n"
+        "- For unsupported equipment: ALWAYS attempt research and provide likelihood assessment using fallback_research data\n"
+        "- Use fallback_research.likely_supported, fallback_research.overlaps, and fallback_research.summary to determine likelihood\n"
+        "- Be specific about why equipment is likely/unlikely supported based on measurement capabilities and similar equipment\n"
     ))
 
     prior_messages = conversation_history
@@ -2042,11 +2006,39 @@ def chat_with_agent_sync(user_input: str, conversation_history: list = None) -> 
         "You are a metrology lab capabilities assistant and orchestrator."
         " Primary intents: \n"
         " - Capability check: parse equipment and check against Tescom list via tools.\n"
-        " - Database update: only proceed when the user explicitly asks to 'update database' or equivalent.\n"
-        "Update flow: Confirm intent, ask what to update, call 'parse_update_request' to extract manufacturer, model, and new level. Then ask for the user's name and the password. Only after getting both, pass values to 'apply_update'.\n"
-        "Password is required and case-insensitive ('bigbrain'). Keep questions concise.\n"
-        "When the capability check returns supported=false and includes 'fallback_research', ALWAYS include the following in your reply: a short 'Description:' using fallback_research.description, and a 'Likely Measurement Functions:' sentence using fallback_research.functions_summary. Also include the overlaps list from fallback_research.overlaps if present, and clearly state whether calibration support is likely based on fallback_research.summary. "
-        "IMPORTANT: If fallback_research.likely_supported is True AND there are overlaps in fallback_research.overlaps, then calibration support is LIKELY and you should emphasize this positive conclusion."
+        " - Do not perform database edits. If the user asks to modify the database, politely explain that updates are handled via a separate process.\n"
+        "\n"
+        "CRITICAL: Always output your final response in this exact structured format:\n"
+        "\n"
+        "For SUPPORTED equipment with accredited=true:\n"
+        "The equipment {MANUFACTURER} {MODEL} is supported and can be given accredited calibration.\n"
+        "\n"
+        "Accredited: Yes\n"
+        "Level 4 Only  (include this line ONLY if level4_only=true)\n"
+        "Comments: {comments}  (include this line ONLY if comments exist)\n"
+        "\n"
+        "For SUPPORTED equipment with accredited=false:\n"
+        "The equipment {MANUFACTURER} {MODEL} is supported but does not have accreditation for calibration.\n"
+        "\n"
+        "Accredited: No\n"
+        "Comments: {comments}  (include this line ONLY if comments exist)\n"
+        "\n"
+        "For UNSUPPORTED equipment:\n"
+        "The equipment {MANUFACTURER} {MODEL} is not supported in Tescom's database.\n"
+        "\n"
+        "Accredited: No\n"
+        "\n"
+        "Based on research, this equipment appears to be [likely/unlikely] to be supported because [reasoning about characteristics or similar equipment types that Tescom supports].\n"
+        "\n"
+        "Rules for output formatting:\n"
+        "- Use the manufacturer and model from tool results when available\n"
+        "- For supported equipment with accredited=true: Use the 'can be given accredited calibration' format and show 'Accredited: Yes'\n"
+        "- For supported equipment with accredited=false: Use the 'does not have accreditation for calibration' format and show 'Accredited: No'\n"
+        "- Include 'Level 4 Only' line ONLY if tool results show level4_only=true\n"
+        "- Include 'Comments:' line ONLY if there are actual comments from tool results\n"
+        "- For unsupported equipment: ALWAYS attempt research and provide likelihood assessment using fallback_research data\n"
+        "- Use fallback_research.likely_supported, fallback_research.overlaps, and fallback_research.summary to determine likelihood\n"
+        "- Be specific about why equipment is likely/unlikely supported based on measurement capabilities and similar equipment\n"
     ))
 
     prior_messages = conversation_history

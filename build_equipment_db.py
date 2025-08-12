@@ -222,6 +222,39 @@ def normalize_model(value: str) -> str:
 def to_int_accredited(value: Any) -> int:
     if value is None:
         return 0
+    if isinstance(value, str):
+        value_upper = value.upper().strip()
+        if value_upper == "YES":
+            return 1
+        elif value_upper == "NO":
+            return 0
+    return 0  # Default to 0 for any other value
+
+
+def to_int_flag(value: Any) -> int:
+    """Generic boolean-to-int converter for spreadsheet flags."""
+    return to_int_accredited(value)
+
+
+def parse_price(value: Any) -> Optional[float]:
+    """Parse a price field from Excel to float (REAL). Returns None if not parseable."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        # Treat negative or zero as valid values; return float
+        return float(value)
+    s = str(value).strip()
+    if s == "":
+        return None
+    s_lower = s.lower()
+    if s_lower in {"na", "n/a", "none", "null", "-", "tbd", "unknown"}:
+        return None
+    # Remove currency symbols and thousand separators
+    s_clean = re.sub(r"[,$]", "", s)
+    try:
+        return float(s_clean)
+    except Exception:
+        return None
     if isinstance(value, (int, bool)):
         return 1 if bool(value) else 0
     s = str(value).strip().lower()
@@ -339,7 +372,35 @@ def ingest_excel(excel_path: Path, sample: int = 0) -> pd.DataFrame:
     col_manufacturer = find_column(df, "MANUFACTURER")
     col_model = find_column(df, "MODEL")
     col_description = find_column(df, "DESCRIPTION")
-    col_accredited = find_column(df, "Accredited")
+    col_accredited = find_column(df, "Accredited") or find_column(df, "Accredited?")
+    # Optional fields
+    col_price_l1 = (
+        find_column(df, "Price Level 1")
+        or find_column(df, "Price L1")
+        or find_column(df, "Price1")
+        or find_column(df, "L1 Price")
+    )
+    col_price_l2 = (
+        find_column(df, "Price Level 2")
+        or find_column(df, "Price L2")
+        or find_column(df, "Price2")
+        or find_column(df, "L2 Price")
+    )
+    col_price_l3 = (
+        find_column(df, "Price Level 3")
+        or find_column(df, "Price L3")
+        or find_column(df, "Price3")
+        or find_column(df, "L3 Price")
+    )
+    col_level4_only = (
+        find_column(df, "Level 4 only")
+        or find_column(df, "Level4 only")
+        or find_column(df, "Level4 Only")
+        or find_column(df, "Level 4 Only")
+        or find_column(df, "Level 4 Only?")
+        or find_column(df, "L4 Only")
+    )
+    col_comments = find_column(df, "Comments") or find_column(df, "Comment")
 
     required = [col_manufacturer, col_model, col_description, col_accredited]
     if any(c is None for c in required):
@@ -354,10 +415,74 @@ def ingest_excel(excel_path: Path, sample: int = 0) -> pd.DataFrame:
         col_accredited: "Accredited",
     })
 
+    # Bring optional columns under standard internal names if they exist
+    if col_price_l1:
+        df = df.rename(columns={col_price_l1: "Price_L1"})
+    if col_price_l2:
+        df = df.rename(columns={col_price_l2: "Price_L2"})
+    if col_price_l3:
+        df = df.rename(columns={col_price_l3: "Price_L3"})
+    if col_level4_only:
+        df = df.rename(columns={col_level4_only: "Level4_Only"})
+    if col_comments:
+        df = df.rename(columns={col_comments: "Comments"})
+
     # Ensure string types and clean whitespace
     for c in ["MANUFACTURER", "MODEL", "DESCRIPTION"]:
         df[c] = df[c].astype(str).fillna("").map(lambda s: collapse_spaces(str(s)))
     df["Accredited"] = df["Accredited"].map(to_int_accredited)
+
+    # Normalize optional fields
+    if "Level4_Only" in df.columns:
+        df["Level4_Only"] = df["Level4_Only"].map(to_int_flag)
+    else:
+        df["Level4_Only"] = 0
+
+    for c in ["Price_L1", "Price_L2", "Price_L3"]:
+        if c in df.columns:
+            df[c] = df[c].map(parse_price)
+        else:
+            df[c] = None
+
+    if "Comments" not in df.columns:
+        df["Comments"] = ""
+
+    # Capture any additional columns into a JSON blob for preservation
+    standard_cols = {"MANUFACTURER", "MODEL", "DESCRIPTION", "Accredited", "Price_L1", "Price_L2", "Price_L3", "Level4_Only", "Comments"}
+    extra_cols = [c for c in df.columns if c not in standard_cols]
+
+    def _row_extra_json(row: pd.Series) -> str:
+        extra: Dict[str, Any] = {}
+        for col in extra_cols:
+            val = row.get(col, None)
+            # Skip NaN/None/empty-like
+            if pd.isna(val):
+                continue
+            if isinstance(val, str):
+                sval = collapse_spaces(val)
+                if not sval or sval.lower() in {"none", "na", "n/a", "null"}:
+                    continue
+                extra[col] = sval
+            else:
+                extra[col] = val
+        try:
+            return json.dumps(extra, ensure_ascii=False)
+        except Exception:
+            # Fallback: coerce non-serializable values to string
+            safe_extra: Dict[str, Any] = {}
+            for k, v in extra.items():
+                try:
+                    json.dumps(v)
+                    safe_extra[k] = v
+                except Exception:
+                    safe_extra[k] = str(v)
+            return json.dumps(safe_extra, ensure_ascii=False)
+
+    if extra_cols:
+        df["extra_json"] = df.apply(_row_extra_json, axis=1)
+    else:
+        df["extra_json"] = "{}"
+
     return df
 
 
@@ -380,15 +505,28 @@ def clean_and_normalize(df: pd.DataFrame, aliases: Aliases) -> pd.DataFrame:
 
     # Keep original description
     df["description"] = df["DESCRIPTION"].astype(str)
-    df["accredited"] = df["Accredited"].astype(int)
+    
+    # Convert YES/NO to 1/0 for boolean fields
+    df["accredited"] = df["Accredited"]  # Already converted by to_int_accredited function
+    df["level4_only"] = df["Level4_Only"].map({"YES": 1, "NO": 0}).fillna(0).astype(int)
+    df["price_level1"] = df["Price_L1"].astype(float) if "Price_L1" in df.columns else None
+    df["price_level2"] = df["Price_L2"].astype(float) if "Price_L2" in df.columns else None
+    df["price_level3"] = df["Price_L3"].astype(float) if "Price_L3" in df.columns else None
+    df["comments"] = df["Comments"].astype(str) if "Comments" in df.columns else ""
 
     cleaned = df[[
         "manufacturer",
         "model",
         "description",
         "accredited",
+        "level4_only",
+        "price_level1",
+        "price_level2",
+        "price_level3",
+        "comments",
         "manufacturer_norm",
         "model_norm",
+        "extra_json",
     ]].copy()
 
     return cleaned
@@ -409,8 +547,14 @@ CREATE TABLE IF NOT EXISTS equipment (
     model TEXT,
     description TEXT,
     accredited INTEGER NOT NULL,
+    level4_only INTEGER NOT NULL DEFAULT 0,
+    price_level1 REAL,
+    price_level2 REAL,
+    price_level3 REAL,
+    comments TEXT,
     manufacturer_norm TEXT,
-    model_norm TEXT
+    model_norm TEXT,
+    extra_json TEXT
 );
 
 -- Unique index for idempotency and fast exact lookups
@@ -461,6 +605,34 @@ def ensure_schema(conn: sqlite3.Connection, rebuild: bool) -> None:
     conn.executescript(SCHEMA_SQL)
     conn.commit()
 
+    # Ensure new columns exist on older databases (non-rebuild path)
+    try:
+        cur = conn.cursor()
+        cur.execute("PRAGMA table_info(equipment)")
+        cols = {row[1] for row in cur.fetchall()}  # name is at index 1
+        # Add columns if missing
+        if "level4_only" not in cols:
+            logging.info("Adding missing column 'level4_only' to equipment table")
+            cur.execute("ALTER TABLE equipment ADD COLUMN level4_only INTEGER NOT NULL DEFAULT 0")
+        if "price_level1" not in cols:
+            logging.info("Adding missing column 'price_level1' to equipment table")
+            cur.execute("ALTER TABLE equipment ADD COLUMN price_level1 REAL")
+        if "price_level2" not in cols:
+            logging.info("Adding missing column 'price_level2' to equipment table")
+            cur.execute("ALTER TABLE equipment ADD COLUMN price_level2 REAL")
+        if "price_level3" not in cols:
+            logging.info("Adding missing column 'price_level3' to equipment table")
+            cur.execute("ALTER TABLE equipment ADD COLUMN price_level3 REAL")
+        if "comments" not in cols:
+            logging.info("Adding missing column 'comments' to equipment table")
+            cur.execute("ALTER TABLE equipment ADD COLUMN comments TEXT")
+        if "extra_json" not in cols:
+            logging.info("Adding missing column 'extra_json' to equipment table")
+            cur.execute("ALTER TABLE equipment ADD COLUMN extra_json TEXT")
+            conn.commit()
+    except Exception as e:
+        logging.warning(f"Schema check/upgrade skipped or failed: {e}")
+
 
 def insert_dataframe(conn: sqlite3.Connection, df: pd.DataFrame) -> None:
     rows = [
@@ -469,17 +641,25 @@ def insert_dataframe(conn: sqlite3.Connection, df: pd.DataFrame) -> None:
             r["model"],
             r["description"],
             int(r["accredited"]),
+            int(r["level4_only"]),
+            (None if pd.isna(r["price_level1"]) else float(r["price_level1"])) if r.get("price_level1") is not None else None,
+            (None if pd.isna(r["price_level2"]) else float(r["price_level2"])) if r.get("price_level2") is not None else None,
+            (None if pd.isna(r["price_level3"]) else float(r["price_level3"])) if r.get("price_level3") is not None else None,
+            r.get("comments", ""),
             r["manufacturer_norm"],
             r["model_norm"],
+            r.get("extra_json", "{}"),
         )
         for _, r in df.iterrows()
     ]
 
     sql = (
-        "INSERT INTO equipment (manufacturer, model, description, accredited, manufacturer_norm, model_norm) "
-        "VALUES (?, ?, ?, ?, ?, ?) "
+        "INSERT INTO equipment (manufacturer, model, description, accredited, level4_only, price_level1, price_level2, price_level3, comments, manufacturer_norm, model_norm, extra_json) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
         "ON CONFLICT(manufacturer_norm, model_norm) DO UPDATE SET "
-        "manufacturer=excluded.manufacturer, model=excluded.model, description=excluded.description, accredited=excluded.accredited"
+        "manufacturer=excluded.manufacturer, model=excluded.model, description=excluded.description, accredited=excluded.accredited, "
+        "level4_only=excluded.level4_only, price_level1=excluded.price_level1, price_level2=excluded.price_level2, price_level3=excluded.price_level3, comments=excluded.comments, "
+        "extra_json=excluded.extra_json"
     )
     cur = conn.cursor()
     cur.executemany(sql, rows)

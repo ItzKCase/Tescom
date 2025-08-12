@@ -1,0 +1,195 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker: Build App",
+            "type": "shell",
+            "command": "docker",
+            "args": ["build", "-t", "tescom-agent", "."],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Test Database",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "run", 
+                "--rm", 
+                "-e", "OPENAI_API_KEY=test_key",
+                "-e", "SERPER_API_KEY=test_key",
+                "tescom-agent", 
+                "python", 
+                "docker-init-db.py"
+            ],
+            "group": "test",
+            "dependsOn": "Docker: Build App",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Start App (Test)",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "run", 
+                "--rm", 
+                "-p", "8080:7860",
+                "-e", "OPENAI_API_KEY=${input:openaiKey}",
+                "-e", "SERPER_API_KEY=${input:serperKey}",
+                "--name", "tescom-test",
+                "tescom-agent"
+            ],
+            "group": "test",
+            "dependsOn": "Docker: Build App",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Deploy with Compose",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["up", "-d"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Stop and Clean",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["down", "-v"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: View Logs",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["logs", "-f", "tescom-agent"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Full Test Suite",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Docker: Build App",
+                "Docker: Test Database",
+                "Docker: Deploy with Compose"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Docker: Quick Update",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["down", "&&", "docker-compose", "build", "--no-cache", "&&", "docker-compose", "up", "-d"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Development Update",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["down", "&&", "docker-compose", "build", "&&", "docker-compose", "up", "-d"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Update Manager",
+            "type": "shell",
+            "command": "python",
+            "args": ["update-docker-container.py"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Rebuild Database Only",
+            "type": "shell",
+            "command": "python",
+            "args": ["update-docker-container.py"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "openaiKey",
+            "description": "OpenAI API Key",
+            "default": "${env:OPENAI_API_KEY}",
+            "type": "promptString"
+        },
+        {
+            "id": "serperKey", 
+            "description": "Serper API Key",
+            "default": "${env:SERPER_API_KEY}",
+            "type": "promptString"
+        }
+    ]
+}

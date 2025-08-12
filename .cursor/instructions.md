@@ -32,11 +32,8 @@ Lints: passes ruff (if added later).
 
 Imports: no unused imports.
 
-Remember that the environment is using uv.
 
-App: uv run app.py launches Gradio at http://127.0.0.1:7860.
-
-Chat: user can ask something like “what’s today’s date?” and “search: Keysight 34401A datasheet” and see tool outputs reflected in answers.
+Chat: user can ask something like  “search: Keysight 34401A datasheet” and see tool outputs reflected in answers.
 
 When a bug occurs:
 

@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Test Docker App",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/docker-test-runner.js",
+            "console": "integratedTerminal",
+            "env": {
+                "DOCKER_BUILDKIT": "1"
+            },
+            "preLaunchTask": "Docker: Build App"
+        },
+        {
+            "name": "Debug Docker Container",
+            "type": "node", 
+            "request": "attach",
+            "port": 8080,
+            "address": "localhost",
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/app",
+            "skipFiles": ["<node_internals>/**"]
+        }
+    ]
+}

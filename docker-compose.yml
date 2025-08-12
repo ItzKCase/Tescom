@@ -1,50 +1,52 @@
-version: '3.8'
-
 services:
   tescom-agent:
     build: .
+    container_name: tescom-agent
     ports:
-      - "8080:7860"  # Map host port 8080 to container port 7860
+      - "8080:7860" # Map host port 8080 to container port 7860
     environment:
-      # Required API keys (set these in .env file or environment)
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SERPER_API_KEY=${SERPER_API_KEY}
-      
-      # Optional configuration overrides
+      - GRADIO_HOST=0.0.0.0
+      - GRADIO_PORT=7860
       - LOG_DIR=/app/logs
       - DB_PATH=/app/data/equipment.db
       - BACKUPS_DIR=/app/backups
-      - GRADIO_HOST=0.0.0.0
-      - GRADIO_PORT=7860
-      
-      # Optional logo configuration
-      - TESCOM_LOGO_URL=${TESCOM_LOGO_URL:-}
       - TESCOM_LOGO_PATH=/app/assets/tescom-logo.png
-    
     volumes:
-      # Persist data across container restarts
-      - tescom-data:/app/data
-      - tescom-logs:/app/logs
-      - tescom-backups:/app/backups
-      
-      # Optional: Mount local assets directory for custom logos
-      # - ./assets:/app/assets:ro
-    
-    restart: unless-stopped
-    
-    # Health check
+      - tescom-data:/app/data # For equipment.db
+      - tescom-logs:/app/logs # For agent.log, capability_changes.log
+      - tescom-backups:/app/backups # For JSON backups
+      - ./Tescom_new_list.xlsx:/app/Tescom_new_list.xlsx:ro # Mount Excel for DB build
+      - ./Tescom_Functions.json:/app/Tescom_Functions.json:ro # Mount functions JSON
+      - ./manufacturer_alias.csv:/app/manufacturer_alias.csv:ro # Mount aliases
+      - ./model_alias.csv:/app/model_alias.csv:ro # Mount aliases
+      - ./assets:/app/assets:ro # Mount assets for logo
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/"]
       interval: 30s
-      timeout: 10s
+      timeout: 30s
       retries: 3
-      start_period: 40s
+      start_period: 10s
+    restart: unless-stopped
 
-# Named volumes for data persistence
+  db-rebuilder:
+    build: .
+    container_name: tescom-db-rebuilder
+    command: python docker-init-db.py
+    environment:
+      - DB_PATH=/app/data/equipment.db
+      - EXCEL_PATH=/app/Tescom_new_list.xlsx
+    volumes:
+      - tescom-data:/app/data
+      - ./Tescom_new_list.xlsx:/app/Tescom_new_list.xlsx:ro
+      - ./Tescom_Functions.json:/app/Tescom_Functions.json:ro
+      - ./manufacturer_alias.csv:/app/manufacturer_alias.csv:ro
+      - ./model_alias.csv:/app/model_alias.csv:ro
+    profiles:
+      - rebuild-db
+
 volumes:
   tescom-data:
-    driver: local
   tescom-logs:
-    driver: local
   tescom-backups:
-    driver: local
