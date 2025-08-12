@@ -5,6 +5,7 @@ import sqlite3
 import time
 import logging
 import asyncio
+import threading
 from typing import Dict, Any, TypedDict, List, Optional, Tuple, Union
 from typing import Set
 from functools import lru_cache
@@ -489,6 +490,104 @@ async def _async_google_search(query: str) -> str:
             
             return result_text
 
+# Synchronous version for threading compatibility
+def _sync_google_search(query: str) -> str:
+    """
+    Synchronous Google search using requests instead of aiohttp.
+    Used when async version fails in worker threads.
+    """
+    import requests
+    
+    # Check cache first
+    cache_key = f"search:{query.lower().strip()}"
+    cached_result = search_results_cache.get(cache_key)
+    if cached_result:
+        logger.info(f"Returning cached search result for: {query}")
+        return cached_result
+
+    logger.info(f"Performing sync search for: {query}")
+    
+    # Get Serper API key from environment
+    serper_api_key = os.getenv("SERPER_API_KEY")
+    if not serper_api_key:
+        error_msg = "Error: SERPER_API_KEY not found in environment variables."
+        logger.error(error_msg)
+        return error_msg
+
+    url = "https://google.serper.dev/search"
+    payload = {
+        "q": query,
+        "num": 5
+    }
+    
+    headers = {
+        'X-API-KEY': serper_api_key,
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        start_time = time.time()
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        
+        execution_time = time.time() - start_time
+        logger.info(f"Sync search API call completed in {execution_time:.2f}s")
+        
+        # Format results (same logic as async version)
+        results = []
+        
+        # Add answer box if available
+        answer_box_content = ""
+        if 'answerBox' in data:
+            answer = data['answerBox']
+            if 'answer' in answer:
+                answer_box_content = answer['answer']
+                results.append(f"💡 Quick Answer: {answer_box_content}\n")
+            elif 'snippet' in answer:
+                answer_box_content = answer['snippet']
+                results.append(f"💡 Quick Answer: {answer_box_content}\n")
+        
+        # Add organic results
+        if 'organic' in data:
+            scored_results = []
+            for result in data['organic'][:10]:
+                score = _calculate_search_result_quality_score(result, query, answer_box_content)
+                scored_results.append((score, result))
+            
+            scored_results.sort(key=lambda x: x[0], reverse=True)
+            top_results = scored_results[:5]
+            
+            results.append("🔍 Search Results:")
+            for i, (score, result) in enumerate(top_results, 1):
+                title = result.get('title', 'No title')
+                snippet = result.get('snippet', 'No description')
+                link = result.get('link', '')
+                
+                quality_indicator = ""
+                if score >= 80:
+                    quality_indicator = " ⭐"
+                elif score >= 60:
+                    quality_indicator = " ✓"
+                
+                results.append(f"\n{i}. **{title}**{quality_indicator}")
+                results.append(f"   {snippet}")
+                if link:
+                    results.append(f"   🔗 {link}")
+        
+        result_text = "\n".join(results) if results else f"No search results found for: {query}"
+        
+        # Cache the result
+        search_results_cache.set(cache_key, result_text)
+        logger.info(f"Cached sync search result for: {query}")
+        
+        return result_text
+        
+    except Exception as e:
+        error_msg = f"Sync search failed for '{query}': {str(e)}"
+        logger.error(error_msg)
+        return error_msg
+
 # Sync wrapper for backward compatibility
 # Define Google search tool using Serper API with caching
 @tool  
@@ -508,6 +607,13 @@ def google_search(query: str) -> str:
         def run_async_search():
             # Run async search in a new event loop if none exists
             try:
+                # Check if we're in a problematic thread (like AnyIO worker)
+                current_thread = threading.current_thread().name
+                if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
+                    # Skip async in worker threads, use sync instead
+                    logger.debug(f"Skipping async in {current_thread}, using sync search")
+                    return _sync_google_search(query)
+                
                 loop = asyncio.get_event_loop()
                 if loop.is_running():
                     # Create a new event loop in a thread if current loop is running
@@ -519,8 +625,8 @@ def google_search(query: str) -> str:
             except RuntimeError:
                 # No event loop exists, create one
                 return asyncio.run(_async_google_search(query))
-        
-        return search_circuit_breaker.call(run_async_search)
+            
+            return search_circuit_breaker.call(run_async_search)
         
     except Exception as e:
         error_msg = f"Search failed for '{query}': {str(e)}"
