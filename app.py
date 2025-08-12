@@ -4,6 +4,9 @@ from agent import chat_with_agent, cleanup_resources
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage, SystemMessage
 import os
 import atexit
+import subprocess
+import sys
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Configure logging for the app
@@ -17,6 +20,69 @@ atexit.register(cleanup_resources)
 load_dotenv()
 TESCOM_LOGO_URL = os.getenv("TESCOM_LOGO_URL", "")
 TESCOM_LOGO_PATH = os.getenv("TESCOM_LOGO_PATH", os.path.join(os.path.dirname(__file__), "assets", "tescom-logo.png"))
+
+def ensure_database_ready():
+    """Ensure the equipment database is available before starting the app."""
+    db_path = os.getenv('DB_PATH', 'equipment.db')
+    excel_file = 'Tescom_new_list.xlsx'
+    
+    print(f"🔍 Checking database at: {db_path}")
+    
+    # Create data directory if it doesn't exist
+    data_dir = os.path.dirname(db_path)
+    if data_dir:
+        os.makedirs(data_dir, exist_ok=True)
+        print(f"📁 Ensured directory exists: {data_dir}")
+    
+    # Check if database exists and has data
+    if os.path.exists(db_path):
+        try:
+            import sqlite3
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM equipment;")
+            count = cursor.fetchone()[0]
+            conn.close()
+            
+            if count > 0:
+                print(f"✅ Database ready: {count} equipment records")
+                return True
+            else:
+                print("⚠️  Database exists but is empty")
+        except Exception as e:
+            print(f"⚠️  Database error: {e}")
+    else:
+        print("❌ Database not found")
+    
+    # Try to build database from Excel
+    if os.path.exists(excel_file):
+        print(f"🔨 Building database from {excel_file}...")
+        try:
+            result = subprocess.run([
+                sys.executable, 'build_equipment_db.py',
+                '--excel', excel_file,
+                '--db', db_path,
+                '--rebuild',
+                '--report'
+            ], capture_output=True, text=True, timeout=300)
+            
+            if result.returncode == 0:
+                print("✅ Database built successfully!")
+                return True
+            else:
+                print(f"❌ Database build failed: {result.stderr}")
+                return False
+        except Exception as e:
+            print(f"❌ Database build error: {e}")
+            return False
+    else:
+        print(f"❌ Excel file not found: {excel_file}")
+        print("💡 The application will start but equipment lookups may not work.")
+        return False
+
+# Ensure database is ready before starting
+print("🚀 Starting Tescom Capabilities Agent...")
+ensure_database_ready()
 
 # Check if API key is set
 if not os.getenv("OPENAI_API_KEY"):

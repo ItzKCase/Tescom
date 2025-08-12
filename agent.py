@@ -890,19 +890,41 @@ def _load_equipment_data() -> None:
 
         conn = _get_db_connection()
         cur = conn.cursor()
-        # Check if level4_only column exists (graceful handling for older DBs)
+        # Check if level4_only and comments columns exist (graceful handling for older DBs)
         try:
             cur.execute("PRAGMA table_info(equipment)")
             columns = [row[1] for row in cur.fetchall()]
             has_level4_only = 'level4_only' in columns
+            has_comments = 'comments' in columns
         except Exception:
             has_level4_only = False
+            has_comments = False
         
-        if has_level4_only:
+        if has_level4_only and has_comments:
             cur.execute(
                 """
                 SELECT manufacturer, model, description, accredited,
                        COALESCE(level4_only, 0) AS level4_only,
+                       COALESCE(comments, '') AS comments,
+                       price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
+        elif has_level4_only:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       COALESCE(level4_only, 0) AS level4_only,
+                       '' AS comments,
+                       price_level1, price_level2, price_level3
+                FROM equipment
+                """
+            )
+        elif has_comments:
+            cur.execute(
+                """
+                SELECT manufacturer, model, description, accredited,
+                       0 AS level4_only,
                        COALESCE(comments, '') AS comments,
                        price_level1, price_level2, price_level3
                 FROM equipment
@@ -913,7 +935,7 @@ def _load_equipment_data() -> None:
                 """
                 SELECT manufacturer, model, description, accredited,
                        0 AS level4_only,
-                       COALESCE(comments, '') AS comments,
+                       '' AS comments,
                        price_level1, price_level2, price_level3
                 FROM equipment
                 """
