@@ -625,8 +625,9 @@ def google_search(query: str) -> str:
             except RuntimeError:
                 # No event loop exists, create one
                 return asyncio.run(_async_google_search(query))
-            
-            return search_circuit_breaker.call(run_async_search)
+        
+        # Call the function through the circuit breaker
+        return search_circuit_breaker.call(run_async_search)
         
     except Exception as e:
         error_msg = f"Search failed for '{query}': {str(e)}"
@@ -831,8 +832,7 @@ def _summarize_measurement_functions(text: str, max_labels: int = 8) -> str:
         "rf_spectrum","network_analysis","rf_power",
         "insulation_resistance","hipot","ground_bond",
         "pressure","flow","humidity",
-        "mass_weight","force","torque","rpm_tach","vibration",
-        "light_lux","sound_level",
+        "mass_weight","force","torque","rpm_tach"
     ]
 
     found: List[str] = []
@@ -1570,6 +1570,544 @@ def check_lab_capability(manufacturer: str, model: str) -> str:
         return json.dumps({"error": f"Error checking capability: {str(e)}"})
 
 
+# Universal Equipment Assessment Improvements
+def _calculate_adaptive_threshold(equipment_type: str, text_complexity: int) -> float:
+    """Calculate similarity threshold based on equipment characteristics."""
+    base_thresholds = {
+        "calibrator": 0.15,      # Multi-function equipment needs lower threshold
+        "multimeter": 0.2,       # Single-function equipment can use higher threshold
+        "oscilloscope": 0.18,    # Complex but focused equipment
+        "power_supply": 0.2,     # Simple equipment
+        "spectrum_analyzer": 0.18, # Complex but focused equipment
+        "network_analyzer": 0.18,  # Complex but focused equipment
+        "signal_generator": 0.18,  # Complex but focused equipment
+        "unknown": 0.15          # Default to lower threshold for unknown types
+    }
+    return base_thresholds.get(equipment_type, 0.15)
+
+def _direct_keyword_match(tokens: Set[str], area_tokens: Set[str]) -> bool:
+    """Direct keyword matching for highest confidence matches."""
+    # Check for exact matches or high-confidence partial matches
+    common_tokens = tokens.intersection(area_tokens)
+    if len(common_tokens) >= 2:  # At least 2 common tokens
+        return True
+    
+    # Check for measurement function keywords
+    measurement_keywords = {"measure", "source", "calibrate", "standard", "accuracy"}
+    if any(keyword in tokens for keyword in measurement_keywords):
+        if any(keyword in area_tokens for keyword in measurement_keywords):
+            return True
+    
+    return False
+
+def _semantic_measurement_match(tokens: Set[str], area: str, eq_type: str) -> bool:
+    """Semantic matching based on measurement functions."""
+    area_lower = area.lower()
+    
+    # Measurement function mapping
+    measurement_functions = {
+        "voltage": ["voltage", "volt", "v", "mv", "kv"],
+        "current": ["current", "amp", "ampere", "a", "ma", "ua"],
+        "resistance": ["resistance", "ohm", "resistor", "r", "kohm", "mohm"],
+        "frequency": ["frequency", "freq", "hz", "khz", "mhz", "ghz"],
+        "temperature": ["temperature", "temp", "celsius", "fahrenheit", "kelvin"],
+        "power": ["power", "watt", "w", "mw", "kw"],
+        "time": ["time", "second", "ms", "us", "ns"]
+    }
+    
+    # Check if equipment tokens match measurement functions in the area
+    for function, keywords in measurement_functions.items():
+        if any(keyword in tokens for keyword in keywords):
+            if any(keyword in area_lower for keyword in keywords):
+                return True
+    
+    return False
+
+def _equipment_type_inference_match(tokens: Set[str], area: str, eq_type: str) -> bool:
+    """Match based on equipment type inference from area description."""
+    if eq_type == "unknown":
+        return False
+    
+    area_lower = area.lower()
+    
+    # Equipment type to area keyword mapping
+    type_area_mapping = {
+        "calibrator": ["calibrate", "calibration", "standard", "source", "reference"],
+        "multimeter": ["measure", "voltage", "current", "resistance", "dmm"],
+        "oscilloscope": ["oscilloscope", "scope", "waveform", "time", "frequency"],
+        "power_supply": ["power", "supply", "source", "voltage", "current"],
+        "spectrum_analyzer": ["spectrum", "analyzer", "frequency", "rf", "signal"],
+        "network_analyzer": ["network", "analyzer", "vna", "impedance", "s-parameters"],
+        "signal_generator": ["generator", "signal", "source", "frequency", "awg"]
+    }
+    
+    if eq_type in type_area_mapping:
+        area_keywords = type_area_mapping[eq_type]
+        if any(keyword in area_lower for keyword in area_keywords):
+            return True
+    
+    return False
+
+def _enhanced_area_matching(tokens: Set[str], areas: Set[str], eq_type: str) -> List[str]:
+    """Multi-layer matching strategy for better coverage."""
+    overlaps = []
+    
+    for area in areas:
+        area_tokens = set(_tokenize_simple(area))
+        
+        # Layer 1: Direct keyword matching (highest confidence)
+        if _direct_keyword_match(tokens, area_tokens):
+            overlaps.append(area)
+            continue
+            
+        # Layer 2: Jaccard similarity with adaptive threshold
+        threshold = _calculate_adaptive_threshold(eq_type, len(tokens))
+        if _jaccard(tokens, area_tokens) >= threshold:
+            overlaps.append(area)
+            continue
+            
+        # Layer 3: Semantic similarity (measurement function matching)
+        if _semantic_measurement_match(tokens, area, eq_type):
+            overlaps.append(area)
+            continue
+            
+        # Layer 4: Equipment type inference matching
+        if _equipment_type_inference_match(tokens, area, eq_type):
+            overlaps.append(area)
+    
+    return overlaps
+
+def _extract_measurement_capabilities(text: str) -> Dict[str, List[str]]:
+    """Extract measurement capabilities from text more intelligently."""
+    capabilities = {
+        "voltage": [],
+        "current": [],
+        "resistance": [],
+        "frequency": [],
+        "temperature": [],
+        "power": [],
+        "time": []
+    }
+    
+    # Use regex patterns to find measurement ranges and types
+    patterns = {
+        "voltage": r"(\d+(?:\.\d+)?)\s*(?:V|mV|μV|kV)",
+        "current": r"(\d+(?:\.\d+)?)\s*(?:A|mA|μA|nA)",
+        "resistance": r"(\d+(?:\.\d+)?)\s*(?:Ω|kΩ|MΩ|mΩ)",
+        "frequency": r"(\d+(?:\.\d+)?)\s*(?:Hz|kHz|MHz|GHz)"
+    }
+    
+    for capability, pattern in patterns.items():
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        if matches:
+            capabilities[capability] = matches
+    
+    return capabilities
+
+def _classify_equipment_intelligence(text: str) -> Dict[str, float]:
+    """Use multiple classification methods and combine results."""
+    classifications = {}
+    
+    # Method 1: Keyword-based classification (existing logic)
+    text_lower = text.lower()
+    keyword_scores = {
+        "calibrator": sum(1 for keyword in ["calibrator", "calibration standard", "multi-function calibrator"] if keyword in text_lower),
+        "multimeter": sum(1 for keyword in ["multimeter", "dmm", "digital multimeter"] if keyword in text_lower),
+        "oscilloscope": sum(1 for keyword in ["oscilloscope", "scope", "dso", "hdo", "mdo", "tds"] if keyword in text_lower),
+        "power_supply": sum(1 for keyword in ["power supply", "psu"] if keyword in text_lower),
+        "spectrum_analyzer": sum(1 for keyword in ["spectrum analyzer", "signal analyzer", "rsa"] if keyword in text_lower),
+        "network_analyzer": sum(1 for keyword in ["network analyzer", "vna"] if keyword in text_lower),
+        "signal_generator": sum(1 for keyword in ["signal generator", "function generator", "awg", "rf generator"] if keyword in text_lower)
+    }
+    
+    # Normalize scores
+    max_score = max(keyword_scores.values()) if keyword_scores.values() else 1
+    for eq_type, score in keyword_scores.items():
+        classifications[eq_type] = score / max_score if max_score > 0 else 0
+    
+    # Method 2: Model number pattern recognition
+    model_patterns = {
+        "calibrator": r"\b(?:55\d{2}[A-Z]?|57\d{2}[A-Z]?|5520[A-Z]?|5720[A-Z]?)\b",
+        "multimeter": r"\b(?:87[Vv]|28[78]|117|179|287|289)\b",
+        "oscilloscope": r"\b(?:TDS\d{4}|DPO\d{4}|MSO\d{4}|HDO\d{4}|MDO\d{4})\b"
+    }
+    
+    for eq_type, pattern in model_patterns.items():
+        if re.search(pattern, text, re.IGNORECASE):
+            classifications[eq_type] = max(classifications.get(eq_type, 0), 0.8)
+    
+    # Method 3: Function-based classification
+    function_keywords = {
+        "calibrator": ["source", "calibrate", "standard", "reference", "multi-function"],
+        "multimeter": ["measure", "voltage", "current", "resistance", "handheld"],
+        "oscilloscope": ["waveform", "bandwidth", "sampling", "trigger", "display"]
+    }
+    
+    for eq_type, keywords in function_keywords.items():
+        score = sum(1 for keyword in keywords if keyword in text_lower)
+        if score > 0:
+            classifications[eq_type] = max(classifications.get(eq_type, 0), score / len(keywords))
+    
+    return classifications
+
+def _combine_classification_scores(classifications: Dict[str, float]) -> str:
+    """Combine multiple classification scores to determine equipment type."""
+    if not classifications:
+        return "unknown"
+    
+    # Find the type with the highest score
+    best_type = max(classifications.items(), key=lambda x: x[1])
+    
+    # Only return the type if confidence is high enough
+    if best_type[1] >= 0.3:
+        return best_type[0]
+    
+    return "unknown"
+
+def _enhance_search_context(manufacturer: str, model: str, query: str) -> List[str]:
+    """Generate more contextually relevant search queries."""
+    enhanced_queries = []
+    
+    # Base technical queries
+    base_queries = [
+        f"{manufacturer} {model} specifications",
+        f"{manufacturer} {model} technical manual",
+        f"{manufacturer} {model} datasheet"
+    ]
+    
+    # Add measurement-specific queries
+    measurement_queries = [
+        f"{manufacturer} {model} measurement capabilities",
+        f"{manufacturer} {model} calibration functions",
+        f"{manufacturer} {model} accuracy specifications"
+    ]
+    
+    # Add application-specific queries
+    application_queries = [
+        f"{manufacturer} {model} lab equipment",
+        f"{manufacturer} {model} metrology",
+        f"{manufacturer} {model} calibration standard"
+    ]
+    
+    enhanced_queries.extend(base_queries + measurement_queries + application_queries)
+    return enhanced_queries[:6]  # Limit to 6 most relevant
+
+def _calculate_assessment_confidence(overlaps: List[str], similar: List[str], 
+                                   eq_type: str, text_quality: float) -> Dict[str, Any]:
+    """Calculate confidence in the assessment decision."""
+    # Calculate text quality based on length and content
+    text_quality = min(text_quality, 1.0) if text_quality else 0.5
+    
+    confidence_factors = {
+        "overlap_confidence": min(len(overlaps) * 0.3, 0.9),
+        "similarity_confidence": min(len(similar) * 0.2, 0.6),
+        "equipment_type_confidence": 0.2 if eq_type != "unknown" else 0.0,
+        "text_quality_confidence": text_quality * 0.3
+    }
+    
+    total_confidence = sum(confidence_factors.values())
+    
+    return {
+        "total_confidence": min(total_confidence, 1.0),
+        "confidence_factors": confidence_factors,
+        "recommendation": _generate_confidence_recommendation(total_confidence)
+    }
+
+def _generate_confidence_recommendation(confidence: float) -> str:
+    """Generate recommendation based on confidence level."""
+    if confidence >= 0.7:
+        return "High confidence assessment - can be relied upon"
+    elif confidence >= 0.4:
+        return "Medium confidence - recommend manual verification"
+    else:
+        return "Low confidence - manual verification required"
+
+def _adaptive_decision_making(overlaps: List[str], similar: List[str], 
+                             confidence: Dict[str, Any]) -> Dict[str, Any]:
+    """Make decisions based on confidence levels and context."""
+    
+    if confidence["total_confidence"] >= 0.7:
+        # High confidence - make definitive assessment
+        decision = "likely_supported" if overlaps or similar else "unlikely_supported"
+        rationale = "High confidence assessment based on strong evidence"
+    elif confidence["total_confidence"] >= 0.4:
+        # Medium confidence - conservative assessment
+        decision = "likely_supported" if overlaps else "uncertain"
+        rationale = "Medium confidence - recommend manual verification"
+    else:
+        # Low confidence - always recommend manual verification
+        decision = "uncertain"
+        rationale = "Low confidence - manual verification required"
+    
+    return {
+        "decision": decision,
+        "rationale": rationale,
+        "confidence": confidence,
+        "recommended_action": _get_recommended_action(decision, confidence)
+    }
+
+def _get_recommended_action(decision: str, confidence: Dict[str, Any]) -> str:
+    """Get recommended action based on decision and confidence."""
+    if decision == "likely_supported":
+        if confidence["total_confidence"] >= 0.7:
+            return "Proceed with calibration - high confidence in support"
+        else:
+            return "Proceed with caution - verify capabilities before calibration"
+    elif decision == "uncertain":
+        return "Manual verification required - consult lab manager"
+    else:
+        return "Manual verification required - equipment likely not supported"
+
+
+@tool
+def infer_capability_via_research(query: str) -> str:
+    """When a model is not found in the DB, research the asset and infer likely support.
+    Steps:
+      1) Use web search tool to gather a short spec snippet.
+      2) Identify equipment type and compare to Tescom measurement areas from Tescom_Functions.json.
+      3) Compare against known DB models by collapsed model token similarity.
+      4) Return a conservative JSON: {likely_supported: bool, rationale, overlaps: [areas], similar_models: [...]}.
+    """
+    try:
+        # 1) Web search with query expansion and vendor domain preference (PARALLEL)
+        parsed_try = json.loads(parse_equipment_details.invoke({"user_text": query}))
+        manu_guess = parsed_try.get("manufacturer") or ""
+        model_guess = parsed_try.get("model") or ""
+        
+        # If no model was parsed, try to extract it heuristically from the original query
+        if not model_guess:
+            import re
+            # Look for common model patterns like "394B", "34401A", etc.
+            model_matches = re.findall(r'\b([A-Za-z]*\d+[A-Za-z]*)\b', query.upper())
+            if model_matches:
+                # Take the longest match (most likely to be a model number)
+                model_guess = max(model_matches, key=len)
+                logger.info(f"Extracted model '{model_guess}' from query using heuristics")
+        
+        # Use enhanced search context for better results
+        queries = _enhance_search_context(manu_guess, model_guess, query)
+
+        preferred = _preferred_domains_for_manu(manu_guess)
+        description = ""
+        snippet = ""
+        
+        # Parallel search execution
+        async def run_parallel_searches():
+            search_queries = queries[:4]  # Limit to 4 parallel searches
+            search_tasks = [_async_google_search(q) for q in search_queries]
+            
+            try:
+                results = await asyncio.gather(search_tasks, return_exceptions=True)
+                combined_snippet = ""
+                best_description = ""
+                
+                for i, result in enumerate(results):
+                    if isinstance(result, Exception):
+                        logger.warning(f"Search failed for query '{search_queries[i]}': {result}")
+                        continue
+                    
+                    s = result if isinstance(result, str) else str(result)
+                    combined_snippet += "\n" + s
+                    
+                    # Try to extract a snippet near a preferred-domain link
+                    near = _extract_snippet_near_link(s, preferred)
+                    if near and not best_description:
+                        best_description = _extract_description_from_search(near)
+                    
+                    # Fallback to general extraction
+                    if not best_description:
+                        best_description = best_description or _extract_description_from_search(s)
+                
+                return best_description, combined_snippet
+            except Exception as e:
+                logger.error(f"Parallel search failed: {e}")
+                # Fallback to single search
+                fallback_result = await _async_google_search(queries[0] if queries else query)
+                return _extract_description_from_search(fallback_result), fallback_result
+        
+        # Execute parallel searches
+        try:
+            # Check if we're in a problematic thread
+            current_thread = threading.current_thread().name
+            if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
+                logger.debug(f"Skipping parallel searches in {current_thread}, using sequential")
+                # Fall back to single search
+                sr = google_search.invoke({"query": queries[0] if queries else query})
+                snippet = sr if isinstance(sr, str) else str(sr)
+                description = _extract_description_from_search(snippet)
+            else:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    # Create a new event loop in a thread if current loop is running
+                    with ThreadPoolExecutor() as executor:
+                        future = executor.submit(asyncio.run, run_parallel_searches())
+                        description, snippet = future.result(timeout=120)  # 2 minutes timeout
+                else:
+                    description, snippet = loop.run_until_complete(run_parallel_searches())
+        except Exception as e:
+            logger.error(f"Failed to run parallel searches: {e}")
+            # Fallback to synchronous search
+            sr = google_search.invoke({"query": queries[0] if queries else query})
+            snippet = sr if isinstance(sr, str) else str(sr)
+            description = _extract_description_from_search(snippet)
+            
+        functions_summary = _summarize_measurement_functions(snippet)
+
+        # 2) Enhanced equipment type detection and area matching
+        areas = _load_lab_functions()
+        
+        # Use enhanced equipment classification
+        classifications = _classify_equipment_intelligence(snippet + " " + query)
+        eq_type = _combine_classification_scores(classifications)
+        
+        tokens = set(_tokenize_simple(snippet + " " + query))
+        
+        # Use enhanced multi-layer area matching
+        overlaps = _enhanced_area_matching(tokens, areas, eq_type)
+        
+        # Extract measurement capabilities for better assessment
+        measurement_capabilities = _extract_measurement_capabilities(snippet)
+        
+        logger.info(f"Enhanced classification: {eq_type} with {len(overlaps)} overlaps")
+        logger.info(f"Measurement capabilities: {measurement_capabilities}")
+
+        # 3) Similar models from DB (by collapsed token containment)
+        _load_equipment_data()
+        collapsed_q = _collapse_alnum(query)
+        similar: List[Dict[str, Any]] = []
+        for recs in _MODEL_TO_RECORDS.values():
+            for rec in recs:
+                model = rec.get("model_num") or ""
+                if not model:
+                    continue
+                if _collapse_alnum(model).startswith(collapsed_q) or collapsed_q in _collapse_alnum(model):
+                    similar.append({
+                        "manufacturer": rec.get("manufacturer"),
+                        "model": rec.get("model_num"),
+                        "description": rec.get("gage_descr"),
+                        "accredited": int(rec.get("accredited", 0)),
+                    })
+        # Shorten list
+        if len(similar) > 10:
+            similar = similar[:10]
+
+        # 4) Enhanced decision making with confidence scoring
+        # Calculate text quality based on snippet length and content richness
+        text_quality = min(len(snippet) / 1000.0, 1.0)  # Normalize to 0-1 scale
+        
+        # Calculate assessment confidence
+        confidence = _calculate_assessment_confidence(overlaps, similar, eq_type, text_quality)
+        
+        # Use adaptive decision making
+        decision_result = _adaptive_decision_making(overlaps, similar, confidence)
+        
+        likely_supported = decision_result["decision"] in ["likely_supported"]
+        
+        # Build rationale with confidence information
+        rationale_parts = []
+        if overlaps:
+            rationale_parts.append(f"Areas overlap: {', '.join(sorted(set(overlaps)))}")
+        if similar:
+            rationale_parts.append(f"Found {len(similar)} similar model(s) in DB")
+        if measurement_capabilities:
+            capability_summary = []
+            for cap_type, values in measurement_capabilities.items():
+                if values:
+                    capability_summary.append(f"{cap_type}: {', '.join(values[:3])}")
+            if capability_summary:
+                rationale_parts.append(f"Capabilities: {'; '.join(capability_summary)}")
+        
+        rationale_parts.append(f"Confidence: {confidence['total_confidence']:.2f} - {confidence['recommendation']}")
+        
+        if not overlaps and not similar:
+            rationale_parts.append("Insufficient overlap; recommend manual confirmation")
+
+        # Extract query manufacturer/model for messaging
+        try:
+            p = json.loads(parse_equipment_details.invoke({"user_text": query}))
+            q_manu = (p.get("manufacturer") or "").strip()
+            q_model = (p.get("model") or "").strip()
+        except Exception:
+            q_manu, q_model = "", ""
+
+        # Construct enhanced advice text with confidence information
+        advice: str
+        summary: str
+        support_likely: bool = bool(likely_supported)
+        
+        # Get decision details
+        decision = decision_result["decision"]
+        rationale = decision_result["rationale"]
+        recommended_action = decision_result["recommended_action"]
+        
+        if decision == "likely_supported":
+            if similar:
+                sim = similar[0]
+                sim_str = f"{sim.get('manufacturer','').strip()} {sim.get('model','').strip()}".strip()
+                if q_manu or q_model:
+                    subject = f"{(q_manu + ' ' + q_model).strip()}".strip()
+                else:
+                    subject = query.strip()
+                advice = (
+                    f"The asset {subject} appears similar to {sim_str} in Tescom's supported database and is likely to be supported. "
+                    f"Description: {description or '(no description found)'} "
+                    f"Functions: {functions_summary} "
+                    f"Confidence: {confidence['total_confidence']:.2f} - {recommended_action}"
+                )
+                areas_str = ", ".join(sorted(set(overlaps))) if overlaps else ""
+                if areas_str:
+                    summary = f"Overlaps with measurement areas: {areas_str}. Calibration support is likely. Similar to {sim_str}. Confidence: {confidence['total_confidence']:.2f}"
+                else:
+                    summary = f"Calibration support is likely. Similar to {sim_str}. Confidence: {confidence['total_confidence']:.2f}"
+            else:
+                areas_str = ", ".join(sorted(set(overlaps))) if overlaps else "related areas"
+                subject = (q_manu + " " + q_model).strip() or query.strip()
+                advice = (
+                    f"The asset {subject} overlaps with Tescom's measurement areas ({areas_str}) and is likely to be supported. "
+                    f"Description: {description or '(no description found)'} "
+                    f"Functions: {functions_summary} "
+                    f"Confidence: {confidence['total_confidence']:.2f} - {recommended_action}"
+                )
+                summary = f"Overlaps with measurement areas: {areas_str}. Calibration support is likely. Confidence: {confidence['total_confidence']:.2f}"
+        elif decision == "uncertain":
+            subject = (q_manu + " " + q_model).strip() or query.strip()
+            advice = (
+                f"The asset {subject} assessment is uncertain due to insufficient information. "
+                f"Description: {description or '(no description found)'} "
+                f"Functions: {functions_summary} "
+                f"Confidence: {confidence['total_confidence']:.2f} - {recommended_action}"
+            )
+            summary = f"Assessment uncertain. Manual verification required. Confidence: {confidence['total_confidence']:.2f}"
+        else:
+            subject = (q_manu + " " + q_model).strip() or query.strip()
+            advice = (
+                f"The asset {subject} does not match Tescom's measurement areas and no similar supported models were found; "
+                f"Description: {description or '(no description found)'} "
+                f"Functions: {functions_summary} "
+                f"Confidence: {confidence['total_confidence']:.2f} - {recommended_action}"
+            )
+            summary = f"No overlaps or similar supported models found. Calibration support is unlikely. Confidence: {confidence['total_confidence']:.2f}"
+
+        return json.dumps({
+            "likely_supported": bool(likely_supported),
+            "support_likely": support_likely,
+            "equipment_type": eq_type,
+            "overlaps": overlaps,
+            "similar_models": similar,
+            "rationale": "; ".join(rationale_parts),
+            "description": description,
+            "functions_summary": functions_summary,
+            "advice": advice,
+            "summary": summary,
+            "query": {"manufacturer": q_manu or None, "model": q_model or None},
+            "confidence": confidence,
+            "decision": decision_result,
+            "measurement_capabilities": measurement_capabilities
+        })
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+
 # Note: _build_compact_equipment_summary function removed
 # The LLM now directly generates the required JSON structure based on system prompt instructions
 
@@ -1596,6 +2134,7 @@ llm_with_tools = llm.bind_tools([
     google_search,
     parse_equipment_details,
     check_lab_capability,
+    infer_capability_via_research,
 ])
 
 # Define the state structure using TypedDict for better compatibility
@@ -1633,6 +2172,10 @@ async def execute_tool_async(tool_call: Dict[str, Any]) -> str:
             return check_lab_capability.invoke({
                 "manufacturer": args.get("manufacturer", ""),
                 "model": args.get("model", ""),
+            })
+        elif name == "infer_capability_via_research":
+            return infer_capability_via_research.invoke({
+                "query": args.get("query", ""),
             })
         # Database update tools removed
         else:
@@ -1698,9 +2241,9 @@ def agent_function(state: AgentState) -> AgentState:
             # Check if we're in a problematic thread
             current_thread = threading.current_thread().name
             if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
-                logger.debug(f"Skipping concurrent execution in {current_thread}, using sequential")
-                # Fall through to sequential execution below
-                raise Exception("Skip to sequential execution")
+                logger.debug(f"Using sequential execution in {current_thread} to avoid async issues")
+                # Use sequential execution for problematic threads
+                raise Exception("Use sequential execution")
             
             # Run concurrent tool execution
             loop = asyncio.get_event_loop()
@@ -1738,6 +2281,10 @@ def agent_function(state: AgentState) -> AgentState:
                     tool_result = check_lab_capability.invoke({
                         "manufacturer": args.get("manufacturer", ""),
                         "model": args.get("model", ""),
+                    })
+                elif name == "infer_capability_via_research":
+                    tool_result = infer_capability_via_research.invoke({
+                        "query": args.get("query", ""),
                     })
                 # Database update tools removed
                 else:
@@ -1857,239 +2404,7 @@ def _equipment_type_from_text(text: str) -> Optional[str]:
     return best
 
 
-@tool
-def infer_capability_via_research(query: str) -> str:
-    """When a model is not found in the DB, research the asset and infer likely support.
-    Steps:
-      1) Use web search tool to gather a short spec snippet.
-      2) Identify equipment type and compare to Tescom measurement areas from Tescom_Functions.json.
-      3) Compare against known DB models by collapsed model token similarity.
-      4) Return a conservative JSON: {likely_supported: bool, rationale, overlaps: [areas], similar_models: [...]}.
-    """
-    try:
-        # 1) Web search with query expansion and vendor domain preference (PARALLEL)
-        parsed_try = json.loads(parse_equipment_details.invoke({"user_text": query}))
-        manu_guess = parsed_try.get("manufacturer") or ""
-        model_guess = parsed_try.get("model") or ""
-        
-        # If no model was parsed, try to extract it heuristically from the original query
-        if not model_guess:
-            import re
-            # Look for common model patterns like "394B", "34401A", etc.
-            model_matches = re.findall(r'\b([A-Za-z]*\d+[A-Za-z]*)\b', query.upper())
-            if model_matches:
-                # Take the longest match (most likely to be a model number)
-                model_guess = max(model_matches, key=len)
-                logger.info(f"Extracted model '{model_guess}' from query using heuristics")
-        
-        queries = _expand_search_queries(manu_guess, model_guess, query)
 
-        preferred = _preferred_domains_for_manu(manu_guess)
-        description = ""
-        snippet = ""
-        
-        # Parallel search execution
-        async def run_parallel_searches():
-            search_queries = queries[:4]  # Limit to 4 parallel searches
-            search_tasks = [_async_google_search(q) for q in search_queries]
-            
-            try:
-                results = await asyncio.gather(*search_tasks, return_exceptions=True)
-                combined_snippet = ""
-                best_description = ""
-                
-                for i, result in enumerate(results):
-                    if isinstance(result, Exception):
-                        logger.warning(f"Search failed for query '{search_queries[i]}': {result}")
-                        continue
-                    
-                    s = result if isinstance(result, str) else str(result)
-                    combined_snippet += "\n" + s
-                    
-                    # Try to extract a snippet near a preferred-domain link
-                    near = _extract_snippet_near_link(s, preferred)
-                    if near and not best_description:
-                        best_description = _extract_description_from_search(near)
-                    
-                    # Fallback to general extraction
-                    if not best_description:
-                        best_description = best_description or _extract_description_from_search(s)
-                
-                return best_description, combined_snippet
-            except Exception as e:
-                logger.error(f"Parallel search failed: {e}")
-                # Fallback to single search
-                fallback_result = await _async_google_search(queries[0] if queries else query)
-                return _extract_description_from_search(fallback_result), fallback_result
-        
-        # Execute parallel searches
-        try:
-            # Check if we're in a problematic thread
-            current_thread = threading.current_thread().name
-            if 'AnyIO' in current_thread or 'worker' in current_thread.lower():
-                logger.debug(f"Skipping parallel searches in {current_thread}, using sequential")
-                # Fall back to single search
-                sr = google_search.invoke({"query": queries[0] if queries else query})
-                snippet = sr if isinstance(sr, str) else str(sr)
-                description = _extract_description_from_search(snippet)
-            else:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    # Create a new event loop in a thread if current loop is running
-                    with ThreadPoolExecutor() as executor:
-                        future = executor.submit(asyncio.run, run_parallel_searches())
-                        description, snippet = future.result(timeout=120)  # 2 minutes timeout
-                else:
-                    description, snippet = loop.run_until_complete(run_parallel_searches())
-        except Exception as e:
-            logger.error(f"Failed to run parallel searches: {e}")
-            # Fallback to synchronous search
-            sr = google_search.invoke({"query": queries[0] if queries else query})
-            snippet = sr if isinstance(sr, str) else str(sr)
-            description = _extract_description_from_search(snippet)
-            
-        functions_summary = _summarize_measurement_functions(snippet)
-
-        # 2) Determine equipment type and overlaps with lab functions
-        areas = _load_lab_functions()
-        eq_type = _equipment_type_from_text(snippet + " " + query) or "unknown"
-        tokens = set(_tokenize_simple(snippet + " " + query))
-        overlaps = []
-        # Direct keyword alignments for common categories to ensure coverage (e.g., oscilloscope)
-        direct_map = {
-            "oscilloscope": ["oscilloscope", "scope", "dso", "hdo", "mdo", "tds", "lecroy", "teledyne"],
-            "multimeter": ["multimeter", "dmm", "true rms", "handheld", "digital multimeter", "voltage", "current", "resistance"],
-            "calibrator": ["calibrator", "calibration standard"],
-            "power supply": ["power supply", "psu"],
-            "spectrum analyzer": ["spectrum analyzer", "rsa"],
-            "signal generator": ["signal generator", "awg", "rf generator"],
-            "network analyzer": ["network analyzer", "vna"],
-        }
-        for area in areas:
-            area_tokens = set(_tokenize_simple(area))
-            jaccard_score = _jaccard(tokens, area_tokens)
-            
-            # Standard jaccard threshold
-            if jaccard_score >= 0.2:
-                overlaps.append(area)
-            # Special handling for multimeter capabilities
-            elif eq_type == "multimeter":
-                # Multimeters typically do voltage, current, and resistance measurements
-                area_lower = area.lower()
-                if ("voltage" in tokens and ("voltage" in area_lower and "measure" in area_lower)) or \
-                   ("current" in tokens and ("current" in area_lower and "measure" in area_lower)) or \
-                   ("resistance" in tokens and ("resistance" in area_lower and "measure" in area_lower)):
-                    overlaps.append(area)
-            else:
-                # Also consider direct keyword match to measurement area description
-                for label, kws in direct_map.items():
-                    # Check if any keywords from this equipment type are in our tokens
-                    if any(k in tokens for k in _tokenize_simple(" ".join(kws))):
-                        # Check if this equipment type matches the area (handle singular/plural)
-                        area_lower = area.lower()
-                        if (label in area_lower or 
-                            label.rstrip('s') in area_lower or  # Remove plural 's'
-                            (label + 's') in area_lower or      # Add plural 's'
-                            any(kw in area_lower for kw in _tokenize_simple(" ".join(kws)))):
-                            overlaps.append(area)
-                            break
-
-        # 3) Similar models from DB (by collapsed token containment)
-        _load_equipment_data()
-        collapsed_q = _collapse_alnum(query)
-        similar: List[Dict[str, Any]] = []
-        for recs in _MODEL_TO_RECORDS.values():
-            for rec in recs:
-                model = rec.get("model_num") or ""
-                if not model:
-                    continue
-                if _collapse_alnum(model).startswith(collapsed_q) or collapsed_q in _collapse_alnum(model):
-                    similar.append({
-                        "manufacturer": rec.get("manufacturer"),
-                        "model": rec.get("model_num"),
-                        "description": rec.get("gage_descr"),
-                        "accredited": int(rec.get("accredited", 0)),
-                    })
-        # Shorten list
-        if len(similar) > 10:
-            similar = similar[:10]
-
-        # 4) Heuristic decision and advisory text
-        likely_supported = bool(overlaps) or bool(similar)
-        rationale_parts = []
-        if overlaps:
-            rationale_parts.append(f"Areas overlap: {', '.join(sorted(set(overlaps)))}")
-        if similar:
-            rationale_parts.append(f"Found {len(similar)} similar model(s) in DB")
-        if not rationale_parts:
-            rationale_parts.append("Insufficient overlap; recommend manual confirmation")
-
-        # Extract query manufacturer/model for messaging
-        try:
-            p = json.loads(parse_equipment_details.invoke({"user_text": query}))
-            q_manu = (p.get("manufacturer") or "").strip()
-            q_model = (p.get("model") or "").strip()
-        except Exception:
-            q_manu, q_model = "", ""
-
-        # Construct advice text (include description and functions summary in rationale)
-        advice: str
-        summary: str
-        support_likely: bool = bool(likely_supported)
-        if likely_supported:
-            if similar:
-                sim = similar[0]
-                sim_str = f"{sim.get('manufacturer','').strip()} {sim.get('model','').strip()}".strip()
-                if q_manu or q_model:
-                    subject = f"{(q_manu + ' ' + q_model).strip()}".strip()
-                else:
-                    subject = query.strip()
-                advice = (
-                    f"The asset {subject} appears similar to {sim_str} in Tescom's supported database and is likely to be supported. "
-                    f"Description: {description or '(no description found)'} "
-                    f"Functions: {functions_summary} "
-                    "Please confirm with the Lab Manager."
-                )
-                areas_str = ", ".join(sorted(set(overlaps))) if overlaps else ""
-                if areas_str:
-                    summary = f"Overlaps with measurement areas: {areas_str}. Calibration support is likely. Similar to {sim_str}."
-                else:
-                    summary = f"Calibration support is likely. Similar to {sim_str}."
-            else:
-                areas_str = ", ".join(sorted(set(overlaps))) if overlaps else "related areas"
-                subject = (q_manu + " " + q_model).strip() or query.strip()
-                advice = (
-                    f"The asset {subject} overlaps with Tescom's measurement areas ({areas_str}) and is likely to be supported. "
-                    f"Description: {description or '(no description found)'} "
-                    f"Functions: {functions_summary} "
-                    "Please confirm with the Lab Manager."
-                )
-                summary = f"Overlaps with measurement areas: {areas_str}. Calibration support is likely."
-        else:
-            subject = (q_manu + " " + q_model).strip() or query.strip()
-            advice = (
-                f"The asset {subject} does not match Tescom's measurement areas and no similar supported models were found; "
-                f"Description: {description or '(no description found)'} "
-                f"Functions: {functions_summary} "
-                "it is not likely supported. Please confirm with the Lab Manager."
-            )
-            summary = "No overlaps or similar supported models found. Calibration support is unlikely."
-
-        return json.dumps({
-            "likely_supported": bool(likely_supported),
-            "support_likely": support_likely,
-            "equipment_type": eq_type,
-            "overlaps": overlaps,
-            "similar_models": similar,
-            "rationale": "; ".join(rationale_parts),
-            "description": description,
-            "functions_summary": functions_summary,
-            "advice": advice,
-            "summary": summary,
-            "query": {"manufacturer": q_manu or None, "model": q_model or None},
-        })
-    except Exception as e:
-        return json.dumps({"error": str(e)})
 
 # Async version of chat function for streaming support
 async def chat_with_agent_async(user_input: str, conversation_history: list = None) -> tuple[str, list]:
@@ -2112,14 +2427,14 @@ async def chat_with_agent_async(user_input: str, conversation_history: list = No
         "CRITICAL: Always output your final response in this exact structured format:\n"
         "\n"
         "For SUPPORTED equipment with accredited=true:\n"
-        "The equipment {MANUFACTURER} {MODEL} is supported and can be given accredited calibration.\n"
+        "The equipment {MANUFACTURER} {MODEL} is supported for accredited calibration.\n"
         "\n"
         "Accredited: Yes\n"
         "Level 4 Only  (include this line ONLY if level4_only=true)\n"
         "Comments: {comments}  (include this line ONLY if comments exist)\n"
         "\n"
         "For SUPPORTED equipment with accredited=false:\n"
-        "The equipment {MANUFACTURER} {MODEL} is supported but does not have accreditation for calibration.\n"
+        "The equipment {MANUFACTURER} {MODEL} is supported, but not for accreditation calibration.\n"
         "\n"
         "Accredited: No\n"
         "Comments: {comments}  (include this line ONLY if comments exist)\n"
@@ -2134,7 +2449,7 @@ async def chat_with_agent_async(user_input: str, conversation_history: list = No
         "Rules for output formatting:\n"
         "- Use the manufacturer and model from tool results when available\n"
         "- For supported equipment with accredited=true: Use the 'can be given accredited calibration' format and show 'Accredited: Yes'\n"
-        "- For supported equipment with accredited=false: Use the 'does not have accreditation for calibration' format and show 'Accredited: No'\n"
+        "- For supported equipment with accredited=false: Use the 'does not have capability for accreditation' format and show 'Accredited: No'\n"
         "- Include 'Level 4 Only' line ONLY if tool results show level4_only=true\n"
         "- Include 'Comments:' line ONLY if there are actual comments from tool results\n"
         "- For unsupported equipment: ALWAYS attempt research and provide likelihood assessment using fallback_research data\n"
@@ -2234,7 +2549,7 @@ def chat_with_agent_sync(user_input: str, conversation_history: list = None) -> 
         "Rules for output formatting:\n"
         "- Use the manufacturer and model from tool results when available\n"
         "- For supported equipment with accredited=true: Use the 'can be given accredited calibration' format and show 'Accredited: Yes'\n"
-        "- For supported equipment with accredited=false: Use the 'does not have accreditation for calibration' format and show 'Accredited: No'\n"
+        "- For supported equipment with accredited=false: Use the 'does not have capability for accreditation' format and show 'Accredited: No'\n"
         "- Include 'Level 4 Only' line ONLY if tool results show level4_only=true\n"
         "- Include 'Comments:' line ONLY if there are actual comments from tool results\n"
         "- For unsupported equipment: ALWAYS attempt research and provide likelihood assessment using fallback_research data\n"
