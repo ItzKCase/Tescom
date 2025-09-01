@@ -146,42 +146,67 @@ class CircuitBreaker:
 
 # Connection Pool for SQLite
 class SQLiteConnectionPool:
-    """Simple SQLite connection pool for better resource management."""
+    """Enhanced SQLite connection pool with performance optimizations."""
     
-    def __init__(self, db_path: str, pool_size: int = 3):
+    def __init__(self, db_path: str, pool_size: int = 8):
         self.db_path = db_path
         self.pool_size = pool_size
         self.connections: List[sqlite3.Connection] = []
         self.lock = Lock()
+        self.connection_count = 0
         self._initialize_pool()
     
+    def _create_optimized_connection(self) -> sqlite3.Connection:
+        """Create an optimized SQLite connection."""
+        conn = sqlite3.connect(
+            self.db_path, 
+            check_same_thread=False,
+            timeout=30.0,
+            isolation_level=None  # Autocommit mode for better concurrency
+        )
+        conn.row_factory = sqlite3.Row
+        
+        # Enhanced SQLite optimization settings
+        conn.executescript("""
+            PRAGMA journal_mode=WAL;
+            PRAGMA synchronous=NORMAL;
+            PRAGMA cache_size=20000;
+            PRAGMA temp_store=MEMORY;
+            PRAGMA mmap_size=268435456;
+            PRAGMA optimize;
+        """)
+        
+        return conn
+    
     def _initialize_pool(self):
-        """Initialize the connection pool."""
+        """Initialize the connection pool with optimized connections."""
         try:
             for _ in range(self.pool_size):
-                conn = sqlite3.connect(self.db_path, check_same_thread=False)
-                conn.row_factory = sqlite3.Row
-                conn.execute("PRAGMA journal_mode=WAL;")
-                conn.execute("PRAGMA synchronous=NORMAL;")
+                conn = self._create_optimized_connection()
                 self.connections.append(conn)
-            logger.info(f"Initialized SQLite connection pool with {self.pool_size} connections")
+                self.connection_count += 1
+            logger.info(f"Initialized optimized SQLite connection pool with {self.pool_size} connections")
         except Exception as e:
             logger.error(f"Failed to initialize connection pool: {e}")
             raise
     
     def get_connection(self) -> sqlite3.Connection:
-        """Get a connection from the pool."""
+        """Get a connection from the pool with health checking."""
         with self.lock:
             if self.connections:
-                return self.connections.pop()
+                conn = self.connections.pop()
+                # Quick health check
+                try:
+                    conn.execute("SELECT 1").fetchone()
+                    return conn
+                except sqlite3.Error:
+                    logger.warning("Replacing unhealthy database connection")
+                    conn.close()
+                    return self._create_optimized_connection()
             else:
-                # If pool is empty, create a new connection
-                logger.warning("Connection pool exhausted, creating new connection")
-                conn = sqlite3.connect(self.db_path, check_same_thread=False)
-                conn.row_factory = sqlite3.Row
-                conn.execute("PRAGMA journal_mode=WAL;")
-                conn.execute("PRAGMA synchronous=NORMAL;")
-                return conn
+                # Pool exhausted, create temporary connection
+                logger.warning("Connection pool exhausted, creating temporary connection")
+                return self._create_optimized_connection()
     
     def return_connection(self, conn: sqlite3.Connection):
         """Return a connection to the pool."""
@@ -189,21 +214,187 @@ class SQLiteConnectionPool:
             if len(self.connections) < self.pool_size:
                 self.connections.append(conn)
             else:
-                # Pool is full, close the connection
+                # Pool is full, close the excess connection
                 conn.close()
+    
+    def execute_with_retry(self, query: str, params: tuple = (), retries: int = 3) -> List[sqlite3.Row]:
+        """Execute query with automatic retry and connection management."""
+        for attempt in range(retries):
+            conn = None
+            try:
+                conn = self.get_connection()
+                cursor = conn.execute(query, params)
+                results = cursor.fetchall()
+                return results
+            except sqlite3.Error as e:
+                logger.warning(f"Database query failed (attempt {attempt + 1}): {e}")
+                if attempt == retries - 1:
+                    raise
+                if conn:
+                    try:
+                        conn.close()
+                    except:
+                        pass
+                    conn = None
+            finally:
+                if conn:
+                    self.return_connection(conn)
     
     def close_all(self):
         """Close all connections in the pool."""
         with self.lock:
             for conn in self.connections:
-                conn.close()
+                try:
+                    conn.close()
+                except:
+                    pass
             self.connections.clear()
             logger.info("All connections in pool closed")
+
+# Memory monitoring utilities
+import psutil
+import gc
+
+def get_memory_usage() -> Dict[str, float]:
+    """Get current memory usage statistics."""
+    process = psutil.Process()
+    memory_info = process.memory_info()
+    return {
+        'rss_mb': memory_info.rss / 1024 / 1024,  # Resident Set Size
+        'vms_mb': memory_info.vms / 1024 / 1024,  # Virtual Memory Size
+        'percent': process.memory_percent(),
+        'available_mb': psutil.virtual_memory().available / 1024 / 1024
+    }
+
+def force_garbage_collection():
+    """Force garbage collection and return freed memory."""
+    before = get_memory_usage()['rss_mb']
+    gc.collect()
+    after = get_memory_usage()['rss_mb']
+    freed_mb = before - after
+    if freed_mb > 1:
+        logger.info(f"Garbage collection freed {freed_mb:.1f} MB")
+    return freed_mb
+
+class MemoryMonitor:
+    """Monitor memory usage and trigger cleanup when needed."""
+    
+    def __init__(self, warning_threshold_mb: float = 512, critical_threshold_mb: float = 1024):
+        self.warning_threshold = warning_threshold_mb
+        self.critical_threshold = critical_threshold_mb
+        
+    def check_memory(self) -> Dict[str, Any]:
+        """Check current memory usage and recommend actions."""
+        usage = get_memory_usage()
+        status = "normal"
+        actions = []
+        
+        if usage['rss_mb'] > self.critical_threshold:
+            status = "critical"
+            actions = ["force_gc", "clear_caches", "reduce_batch_size"]
+        elif usage['rss_mb'] > self.warning_threshold:
+            status = "warning"
+            actions = ["force_gc"]
+            
+        return {
+            "status": status,
+            "usage": usage,
+            "actions": actions
+        }
 
 # Global caches, connection pool, and circuit breakers
 equipment_data_cache = TTLCache(ttl_seconds=600)  # 10 minutes for equipment data
 search_results_cache = TTLCache(ttl_seconds=300)  # 5 minutes for search results
 connection_pool: Optional[SQLiteConnectionPool] = None
+memory_monitor = MemoryMonitor()
+
+def warm_essential_caches():
+    """Warm up essential caches on startup for better performance."""
+    logger.info("Starting cache warming process...")
+    
+    try:
+        # Pre-load equipment data
+        _load_equipment_data()
+        logger.info("Equipment data cache warmed")
+        
+        # Pre-warm database connection pool
+        if connection_pool:
+            # Test all connections
+            connections = []
+            for _ in range(min(3, connection_pool.pool_size)):
+                try:
+                    conn = connection_pool.get_connection()
+                    conn.execute("SELECT COUNT(*) FROM equipment").fetchone()
+                    connections.append(conn)
+                except Exception as e:
+                    logger.warning(f"Failed to warm connection: {e}")
+            
+            # Return connections to pool
+            for conn in connections:
+                connection_pool.return_connection(conn)
+            
+            logger.info(f"Database connection pool warmed with {len(connections)} connections")
+        
+        logger.info("Cache warming completed successfully")
+        
+    except Exception as e:
+        logger.error(f"Cache warming failed: {e}")
+
+def adaptive_cache_management():
+    """Adaptively manage caches based on memory usage."""
+    memory_status = memory_monitor.check_memory()
+    
+    if memory_status["status"] == "critical":
+        logger.warning("Critical memory usage detected, clearing caches")
+        equipment_data_cache.clear()
+        search_results_cache.clear()
+        force_garbage_collection()
+    elif memory_status["status"] == "warning":
+        logger.info("High memory usage detected, forcing garbage collection")
+        force_garbage_collection()
+
+# Rate limiting implementation
+import time
+from collections import defaultdict
+
+class RateLimiter:
+    """Token bucket rate limiter for API calls."""
+    
+    def __init__(self, max_calls: int, window_seconds: float = 60.0):
+        self.max_calls = max_calls
+        self.window_seconds = window_seconds
+        self.calls = defaultdict(list)
+        self.lock = Lock()
+    
+    def is_allowed(self, key: str = "default") -> bool:
+        """Check if a call is allowed under the rate limit."""
+        with self.lock:
+            now = time.time()
+            
+            # Remove old calls outside the window
+            self.calls[key] = [call_time for call_time in self.calls[key] 
+                              if now - call_time < self.window_seconds]
+            
+            # Check if we're under the limit
+            if len(self.calls[key]) < self.max_calls:
+                self.calls[key].append(now)
+                return True
+            
+            return False
+    
+    def wait_time(self, key: str = "default") -> float:
+        """Get the time to wait before the next call is allowed."""
+        with self.lock:
+            if not self.calls[key]:
+                return 0.0
+            
+            oldest_call = min(self.calls[key])
+            wait_time = self.window_seconds - (time.time() - oldest_call)
+            return max(0.0, wait_time)
+
+# Rate limiters for different services
+google_search_limiter = RateLimiter(max_calls=10, window_seconds=60)  # 10 calls per minute
+openai_limiter = RateLimiter(max_calls=50, window_seconds=60)  # 50 calls per minute
 
 # Circuit breakers for external services
 search_circuit_breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=30)
@@ -590,11 +781,11 @@ def _sync_google_search(query: str) -> str:
 
 # Sync wrapper for backward compatibility
 # Define Google search tool using Serper API with caching
-@tool  
+@tool
 def google_search(query: str) -> str:
     """
     Search Google for information about a query using Serper API.
-    Uses caching, circuit breaker, and async execution for better performance.
+    Uses caching, circuit breaker, rate limiting, and async execution for better performance.
     
     Args:
         query: The search query string
@@ -603,6 +794,17 @@ def google_search(query: str) -> str:
         Search results as a formatted string
     """
     try:
+        # Check rate limit
+        if not google_search_limiter.is_allowed("google_search"):
+            wait_time = google_search_limiter.wait_time("google_search")
+            logger.warning(f"Rate limit exceeded for Google search, need to wait {wait_time:.1f}s")
+            if wait_time > 5:  # Don't wait more than 5 seconds
+                return "❌ Search rate limit exceeded. Please try again in a few moments."
+            time.sleep(wait_time)
+        
+        # Check memory before expensive operation
+        adaptive_cache_management()
+        
         # Use circuit breaker to protect against API failures
         def run_async_search():
             # Run async search in a new event loop if none exists
@@ -627,7 +829,14 @@ def google_search(query: str) -> str:
                 return asyncio.run(_async_google_search(query))
         
         # Call the function through the circuit breaker
-        return search_circuit_breaker.call(run_async_search)
+        result = search_circuit_breaker.call(run_async_search)
+        
+        # Check memory after operation
+        memory_status = memory_monitor.check_memory()
+        if memory_status["status"] != "normal":
+            logger.info(f"Memory status after search: {memory_status['status']} ({memory_status['usage']['rss_mb']:.1f}MB)")
+        
+        return result
         
     except Exception as e:
         error_msg = f"Search failed for '{query}': {str(e)}"

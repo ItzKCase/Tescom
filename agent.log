@@ -1193,3 +1193,193 @@
 2025-08-31 17:37:36,405 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 2025-08-31 18:02:21,037 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 2025-08-31 18:11:04,144 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 16:22:11,193 - agent - INFO - Starting cache warming process...
+2025-09-01 16:22:11,193 - agent - INFO - Loading equipment data from database
+2025-09-01 16:22:11,198 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 16:22:11,206 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 16:22:11,206 - agent - INFO - Initialized database connection pool
+2025-09-01 16:22:11,218 - agent - INFO - Processing 11552 equipment records
+2025-09-01 16:22:11,308 - agent - INFO - Loaded equipment data in 0.12s: 1410 manufacturers, 10039 models
+2025-09-01 16:22:11,308 - agent - INFO - Equipment data cache warmed
+2025-09-01 16:22:11,308 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 16:22:11,308 - agent - INFO - Cache warming completed successfully
+2025-09-01 16:22:11,998 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 16:22:12,008 - agent - INFO - Closing database connection pool
+2025-09-01 16:22:12,010 - agent - INFO - All connections in pool closed
+2025-09-01 16:22:36,636 - agent - INFO - Starting cache warming process...
+2025-09-01 16:22:36,637 - agent - INFO - Loading equipment data from database
+2025-09-01 16:22:36,641 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 16:22:36,643 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 16:22:36,643 - agent - INFO - Initialized database connection pool
+2025-09-01 16:22:36,655 - agent - INFO - Processing 11552 equipment records
+2025-09-01 16:22:36,747 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 16:22:36,748 - agent - INFO - Equipment data cache warmed
+2025-09-01 16:22:36,748 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 16:22:36,748 - agent - INFO - Cache warming completed successfully
+2025-09-01 16:22:37,356 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 16:22:37,356 - agent - INFO - Closing database connection pool
+2025-09-01 16:22:37,357 - agent - INFO - All connections in pool closed
+2025-09-01 16:30:12,946 - agent - INFO - Starting cache warming process...
+2025-09-01 16:30:12,946 - agent - INFO - Loading equipment data from database
+2025-09-01 16:30:12,950 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 16:30:12,952 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 16:30:12,953 - agent - INFO - Initialized database connection pool
+2025-09-01 16:30:12,965 - agent - INFO - Processing 11552 equipment records
+2025-09-01 16:30:13,062 - agent - INFO - Closing database connection pool
+2025-09-01 16:30:13,063 - agent - INFO - All connections in pool closed
+2025-09-01 16:30:25,678 - agent - INFO - Starting cache warming process...
+2025-09-01 16:30:25,679 - agent - INFO - Loading equipment data from database
+2025-09-01 16:30:25,683 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 16:30:25,685 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 16:30:25,685 - agent - INFO - Initialized database connection pool
+2025-09-01 16:30:25,697 - agent - INFO - Processing 11552 equipment records
+2025-09-01 16:30:25,791 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 16:30:25,791 - agent - INFO - Equipment data cache warmed
+2025-09-01 16:30:25,792 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 16:30:25,792 - agent - INFO - Cache warming completed successfully
+2025-09-01 16:30:26,377 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 16:30:26,377 - agent - INFO - Closing database connection pool
+2025-09-01 16:30:26,378 - agent - INFO - All connections in pool closed
+2025-09-01 16:31:19,652 - agent - INFO - Starting cache warming process...
+2025-09-01 16:31:19,652 - agent - INFO - Loading equipment data from database
+2025-09-01 16:31:19,656 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 16:31:19,659 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 16:31:19,659 - agent - INFO - Initialized database connection pool
+2025-09-01 16:31:19,672 - agent - INFO - Processing 11552 equipment records
+2025-09-01 16:31:19,760 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 16:31:19,760 - agent - INFO - Equipment data cache warmed
+2025-09-01 16:31:19,760 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 16:31:19,760 - agent - INFO - Cache warming completed successfully
+2025-09-01 16:31:20,345 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 16:31:20,345 - agent - INFO - Closing database connection pool
+2025-09-01 16:31:20,346 - agent - INFO - All connections in pool closed
+2025-09-01 16:32:03,362 - agent - INFO - Starting cache warming process...
+2025-09-01 16:32:03,362 - agent - INFO - Loading equipment data from database
+2025-09-01 16:32:03,368 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 16:32:03,370 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 16:32:03,370 - agent - INFO - Initialized database connection pool
+2025-09-01 16:32:03,382 - agent - INFO - Processing 11552 equipment records
+2025-09-01 16:32:03,470 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 16:32:03,470 - agent - INFO - Equipment data cache warmed
+2025-09-01 16:32:03,470 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 16:32:03,470 - agent - INFO - Cache warming completed successfully
+2025-09-01 16:32:04,075 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 16:32:04,075 - agent - INFO - Closing database connection pool
+2025-09-01 16:32:04,076 - agent - INFO - All connections in pool closed
+2025-09-01 17:44:42,591 - agent - INFO - Starting cache warming process...
+2025-09-01 17:44:42,592 - agent - INFO - Loading equipment data from database
+2025-09-01 17:44:42,596 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 17:44:42,598 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 17:44:42,598 - agent - INFO - Initialized database connection pool
+2025-09-01 17:44:42,610 - agent - INFO - Processing 11552 equipment records
+2025-09-01 17:44:42,703 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 17:44:42,704 - agent - INFO - Equipment data cache warmed
+2025-09-01 17:44:42,704 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 17:44:42,704 - agent - INFO - Cache warming completed successfully
+2025-09-01 17:44:43,331 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 17:44:43,332 - agent - INFO - Closing database connection pool
+2025-09-01 17:44:43,333 - agent - INFO - All connections in pool closed
+2025-09-01 17:45:30,213 - agent - INFO - Starting cache warming process...
+2025-09-01 17:45:30,214 - agent - INFO - Loading equipment data from database
+2025-09-01 17:45:30,218 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 17:45:30,220 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 17:45:30,220 - agent - INFO - Initialized database connection pool
+2025-09-01 17:45:30,231 - agent - INFO - Processing 11552 equipment records
+2025-09-01 17:45:30,325 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 17:45:30,326 - agent - INFO - Equipment data cache warmed
+2025-09-01 17:45:30,327 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 17:45:30,327 - agent - INFO - Cache warming completed successfully
+2025-09-01 17:45:30,896 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 17:45:30,897 - agent - INFO - Closing database connection pool
+2025-09-01 17:45:30,898 - agent - INFO - All connections in pool closed
+2025-09-01 17:46:18,894 - agent - INFO - Starting cache warming process...
+2025-09-01 17:46:18,894 - agent - INFO - Loading equipment data from database
+2025-09-01 17:46:18,899 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 17:46:18,901 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 17:46:18,901 - agent - INFO - Initialized database connection pool
+2025-09-01 17:46:18,913 - agent - INFO - Processing 11552 equipment records
+2025-09-01 17:46:19,006 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 17:46:19,007 - agent - INFO - Equipment data cache warmed
+2025-09-01 17:46:19,007 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 17:46:19,007 - agent - INFO - Cache warming completed successfully
+2025-09-01 17:46:19,682 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 17:46:19,682 - agent - INFO - Closing database connection pool
+2025-09-01 17:46:19,683 - agent - INFO - All connections in pool closed
+2025-09-01 17:55:48,309 - agent - INFO - Starting cache warming process...
+2025-09-01 17:55:48,309 - agent - INFO - Loading equipment data from database
+2025-09-01 17:55:48,314 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 17:55:48,316 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 17:55:48,316 - agent - INFO - Initialized database connection pool
+2025-09-01 17:55:48,329 - agent - INFO - Processing 11552 equipment records
+2025-09-01 17:55:48,418 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 17:55:48,418 - agent - INFO - Equipment data cache warmed
+2025-09-01 17:55:48,419 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 17:55:48,419 - agent - INFO - Cache warming completed successfully
+2025-09-01 17:55:49,053 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 17:55:49,054 - agent - INFO - Closing database connection pool
+2025-09-01 17:55:49,055 - agent - INFO - All connections in pool closed
+2025-09-01 18:02:50,108 - agent - INFO - Starting cache warming process...
+2025-09-01 18:02:50,108 - agent - INFO - Loading equipment data from database
+2025-09-01 18:02:50,113 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 18:02:50,115 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 18:02:50,116 - agent - INFO - Initialized database connection pool
+2025-09-01 18:02:50,128 - agent - INFO - Processing 11552 equipment records
+2025-09-01 18:02:50,227 - agent - INFO - Loaded equipment data in 0.12s: 1410 manufacturers, 10039 models
+2025-09-01 18:02:50,228 - agent - INFO - Equipment data cache warmed
+2025-09-01 18:02:50,228 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 18:02:50,228 - agent - INFO - Cache warming completed successfully
+2025-09-01 18:02:50,810 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 18:02:50,811 - agent - INFO - Closing database connection pool
+2025-09-01 18:02:50,811 - agent - INFO - All connections in pool closed
+2025-09-01 18:10:28,910 - agent - INFO - Starting cache warming process...
+2025-09-01 18:10:28,910 - agent - INFO - Loading equipment data from database
+2025-09-01 18:10:28,915 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 18:10:28,918 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 18:10:28,918 - agent - INFO - Initialized database connection pool
+2025-09-01 18:10:28,930 - agent - INFO - Processing 11552 equipment records
+2025-09-01 18:10:29,030 - agent - INFO - Loaded equipment data in 0.12s: 1410 manufacturers, 10039 models
+2025-09-01 18:10:29,030 - agent - INFO - Equipment data cache warmed
+2025-09-01 18:10:29,031 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 18:10:29,031 - agent - INFO - Cache warming completed successfully
+2025-09-01 18:10:29,696 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 18:10:29,697 - agent - INFO - Closing database connection pool
+2025-09-01 18:10:29,697 - agent - INFO - All connections in pool closed
+2025-09-01 18:18:51,803 - agent - INFO - Starting cache warming process...
+2025-09-01 18:18:51,803 - agent - INFO - Loading equipment data from database
+2025-09-01 18:18:51,808 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 18:18:51,810 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 18:18:51,810 - agent - INFO - Initialized database connection pool
+2025-09-01 18:18:51,822 - agent - INFO - Processing 11552 equipment records
+2025-09-01 18:18:51,916 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 18:18:51,917 - agent - INFO - Equipment data cache warmed
+2025-09-01 18:18:51,917 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 18:18:51,917 - agent - INFO - Cache warming completed successfully
+2025-09-01 18:18:52,630 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 18:18:52,630 - agent - INFO - Closing database connection pool
+2025-09-01 18:18:52,631 - agent - INFO - All connections in pool closed
+2025-09-01 18:26:25,173 - agent - INFO - Starting cache warming process...
+2025-09-01 18:26:25,173 - agent - INFO - Loading equipment data from database
+2025-09-01 18:26:25,178 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 18:26:25,180 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 18:26:25,180 - agent - INFO - Initialized database connection pool
+2025-09-01 18:26:25,192 - agent - INFO - Processing 11552 equipment records
+2025-09-01 18:26:25,289 - agent - INFO - Loaded equipment data in 0.12s: 1410 manufacturers, 10039 models
+2025-09-01 18:26:25,291 - agent - INFO - Equipment data cache warmed
+2025-09-01 18:26:25,291 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 18:26:25,291 - agent - INFO - Cache warming completed successfully
+2025-09-01 18:26:25,893 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 18:26:25,894 - agent - INFO - Closing database connection pool
+2025-09-01 18:26:25,895 - agent - INFO - All connections in pool closed
+2025-09-01 18:33:25,007 - agent - INFO - Starting cache warming process...
+2025-09-01 18:33:25,007 - agent - INFO - Loading equipment data from database
+2025-09-01 18:33:25,012 - agent - INFO - Loaded 92 manufacturer aliases
+2025-09-01 18:33:25,014 - agent - INFO - Initialized optimized SQLite connection pool with 8 connections
+2025-09-01 18:33:25,015 - agent - INFO - Initialized database connection pool
+2025-09-01 18:33:25,027 - agent - INFO - Processing 11552 equipment records
+2025-09-01 18:33:25,119 - agent - INFO - Loaded equipment data in 0.11s: 1410 manufacturers, 10039 models
+2025-09-01 18:33:25,119 - agent - INFO - Equipment data cache warmed
+2025-09-01 18:33:25,120 - agent - INFO - Database connection pool warmed with 3 connections
+2025-09-01 18:33:25,120 - agent - INFO - Cache warming completed successfully
+2025-09-01 18:33:25,702 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-09-01 18:33:25,702 - agent - INFO - Closing database connection pool
+2025-09-01 18:33:25,704 - agent - INFO - All connections in pool closed

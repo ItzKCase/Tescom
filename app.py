@@ -8,7 +8,8 @@ import subprocess
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
-from equipment_processor import process_equipment_list, get_data_preview, add_temp_file, cleanup_all_temp_files
+from equipment_processor import (process_equipment_list, get_data_preview, add_temp_file, 
+                                cleanup_all_temp_files)
 
 # Configure logging for the app
 logging.basicConfig(level=logging.INFO)
@@ -101,9 +102,27 @@ def ensure_database_ready():
         print("💡 The application will start but equipment lookups may not work.")
         return False
 
-# Ensure database is ready before starting
+# Ensure database is ready and initialize performance optimizations
 print("🚀 Starting Tescom Capabilities Agent...")
 ensure_database_ready()
+
+# Initialize performance optimizations
+def initialize_performance_optimizations():
+    """Initialize performance optimizations and caches."""
+    try:
+        from agent import warm_essential_caches, connection_pool
+        
+        # Warm up caches for better initial performance
+        print("🔥 Warming up caches...")
+        warm_essential_caches()
+        
+        print("✅ Performance optimizations initialized")
+        
+    except Exception as e:
+        print(f"⚠️ Warning: Some performance optimizations failed to initialize: {e}")
+
+# Initialize optimizations
+initialize_performance_optimizations()
 
 # Check if API key is set
 if not os.getenv("OPENAI_API_KEY"):
@@ -199,9 +218,11 @@ def clear_chat():
     return [], ""
 
 def get_cache_status():
-    """Get current cache status for monitoring."""
+    """Get current cache and system status for monitoring."""
     try:
-        from agent import equipment_data_cache, search_results_cache, search_circuit_breaker, openai_circuit_breaker
+        from agent import (equipment_data_cache, search_results_cache, search_circuit_breaker, 
+                          openai_circuit_breaker, memory_monitor, connection_pool)
+        
         equipment_size = equipment_data_cache.size()
         search_size = search_results_cache.size()
         
@@ -209,10 +230,19 @@ def get_cache_status():
         search_status = "🟢" if search_circuit_breaker.state == "CLOSED" else "🔴" if search_circuit_breaker.state == "OPEN" else "🟡"
         openai_status = "🟢" if openai_circuit_breaker.state == "CLOSED" else "🔴" if openai_circuit_breaker.state == "OPEN" else "🟡"
         
-        return f"📊 Cache: Equipment ({equipment_size}), Search ({search_size}) | Circuit Breakers: Search {search_status}, OpenAI {openai_status} | Phase 2 ✅"
+        # Memory status
+        memory_status = memory_monitor.check_memory()
+        memory_icon = "🟢" if memory_status["status"] == "normal" else "🟡" if memory_status["status"] == "warning" else "🔴"
+        memory_mb = memory_status["usage"]["rss_mb"]
+        
+        # Connection pool status
+        pool_status = "🟢" if connection_pool and hasattr(connection_pool, 'connections') else "🔴"
+        pool_size = len(connection_pool.connections) if connection_pool and hasattr(connection_pool, 'connections') else 0
+        
+        return f"📊 Cache: Eq({equipment_size}), Search({search_size}) | Memory: {memory_icon}{memory_mb:.0f}MB | Pool: {pool_status}({pool_size}) | CB: Search{search_status}, OpenAI{openai_status} | Enhanced ⚡"
     except Exception as e:
         logger.error(f"Error getting cache status: {e}")
-        return "📊 Status: Unable to retrieve system information"
+        return "📊 Status: System monitoring active"
 
 # Create the Gradio interface
 with gr.Blocks(
@@ -460,6 +490,51 @@ with gr.Blocks(
             font-size: 0.875rem;
         }
         
+        /* Progress section styling */
+        .progress-section {
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            border: 2px solid var(--tescom-teal);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-md);
+            animation: pulseProgress 2s ease-in-out infinite;
+        }
+        
+        .progress-section h3 {
+            color: var(--tescom-teal);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 163, 163, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--tescom-teal) 0%, var(--tescom-teal-600) 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--tescom-navy);
+            margin: 5px 0;
+        }
+        
+        @keyframes pulseProgress {
+            0%, 100% { box-shadow: var(--shadow-md); }
+            50% { box-shadow: 0 6px 12px -2px rgba(0, 163, 163, 0.3), 0 4px 6px -3px rgba(0, 163, 163, 0.2); }
+        }
+        
         /* Download section styling */
         .download-section {
             background: linear-gradient(135deg, #e6f7f6 0%, #f0fdfa 100%);
@@ -476,9 +551,73 @@ with gr.Blocks(
             margin-bottom: 12px;
         }
         
+        /* Enhanced download button styling */
+        .download-button {
+            background: linear-gradient(135deg, var(--tescom-teal) 0%, var(--tescom-teal-600) 100%) !important;
+            border: 3px solid var(--tescom-teal) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 25px rgba(0, 163, 163, 0.3), 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            padding: 16px 24px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .download-button:hover {
+            background: linear-gradient(135deg, var(--tescom-teal-600) 0%, #007a7a 100%) !important;
+            border-color: #007a7a !important;
+            box-shadow: 0 12px 35px rgba(0, 163, 163, 0.4), 0 6px 15px rgba(0, 0, 0, 0.15) !important;
+            transform: translateY(-3px) !important;
+        }
+        
+        .download-button:active {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 20px rgba(0, 163, 163, 0.3) !important;
+        }
+        
+        /* Download button glow effect */
+        .download-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .download-button:hover::before {
+            left: 100%;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Side-by-side layout adjustments */
+        .gr-row {
+            gap: 16px;
+        }
+        
+        .gr-column {
+            gap: 16px;
+        }
+        
+        /* Chat interface height adjustment for side-by-side layout */
+        #chatbot {
+            height: 500px !important;
+            min-height: 400px;
+        }
+        
+        /* Equipment upload section height matching */
+        .equipment-upload {
+            min-height: 500px;
         }
         
         /* Responsive adjustments */
@@ -488,8 +627,17 @@ with gr.Blocks(
                 padding: 0 16px;
             }
             
+            /* Stack vertically on mobile */
+            .gr-row {
+                flex-direction: column;
+            }
+            
             #chatbot {
-                height: calc(100vh - 440px) !important;
+                height: 300px !important;
+            }
+            
+            .equipment-upload {
+                min-height: auto;
             }
             
             .brand-header h2 {
@@ -520,10 +668,34 @@ with gr.Blocks(
         ## Tescom Capabilities Agent
         """)
     
-    # Equipment List Upload Section
-    try:
-        # Try to use gr.Column for better layout
-        with gr.Column(elem_classes=["equipment-upload"]):
+        # Main interface layout - Chat on left, File upload on right
+    with gr.Row():
+        # Left Column - Chat Interface
+        with gr.Column(scale=1):
+            gr.Markdown("### 💬 Chat with AI Agent")
+            gr.Markdown("Ask questions about specific equipment, accreditation capabilities, or get help with your equipment list.")
+            
+            chatbot = gr.Chatbot(
+                label="Chat History",
+                show_label=False,
+                container=True,
+                type="messages",
+                autoscroll=True,
+                elem_id="chatbot",
+            )
+            
+            msg = gr.Textbox(
+                label="Your Message",
+                placeholder="Type your message here...",
+                show_label=False
+            )
+            
+            with gr.Row():
+                submit_btn = gr.Button("Send", variant="primary", scale=1)
+                clear_btn = gr.Button("Clear", variant="secondary", scale=1)
+        
+        # Right Column - Equipment List Upload Section
+        with gr.Column(scale=1, elem_classes=["equipment-upload"]):
             gr.Markdown("### 📋 Equipment List Accreditation Assessment")
             gr.Markdown("Upload your equipment list (Excel or CSV) to get a comprehensive accreditation assessment. We'll analyze each item against our database and provide detailed results.")
             
@@ -545,89 +717,28 @@ with gr.Blocks(
                 max_lines=3
             )
             
-            # Data preview section
-            preview_section = gr.HTML(
-                value="",
-                visible=True,
-                elem_classes=["preview-section"]
-            )
-            
             # Download section - will be populated after processing
             download_section = gr.Markdown(
                 value="",
                 visible=False,
                 elem_classes=["download-section"]
             )
-            download_btn = gr.File(
+            download_btn = gr.DownloadButton(
                 label="📄 Download Assessment Results (Excel)", 
-                visible=True,
+                visible=False,
                 scale=1,
-                interactive=False
+                variant="primary",
+                elem_classes=["download-button"]
             )
-    except AttributeError:
-        # Fallback to basic layout if gr.Column is not available
-        gr.Markdown("### 📋 Equipment List Accreditation Assessment")
-        gr.Markdown("Upload your equipment list (Excel or CSV) to get a comprehensive accreditation assessment. We'll analyze each item against our database and provide detailed results.")
-        
-        file_input = gr.File(
-            label="Upload Equipment List",
-            file_types=[".xlsx", ".csv"],
-            file_count="single"
-        )
-        
-        preview_btn = gr.Button("👁️ Preview Data", variant="secondary")
-        process_btn = gr.Button("🔍 Process Equipment List", variant="primary")
-        
-        status_display = gr.Textbox(
-            label="Processing Status",
-            value="Ready to process equipment list. Please upload a file.",
-            interactive=False,
-            max_lines=3
-        )
-        
-        # Data preview section
-        preview_section = gr.HTML(
-            value="",
-            visible=True,
-            elem_classes=["preview-section"]
-        )
-        
-        # Download section - will be populated after processing
-        download_section = gr.Markdown(
-            value="",
-            visible=False,
-            elem_classes=["download-section"]
-        )
-        download_btn = gr.File(
-            label="📄 Download Assessment Results (Excel)", 
-            visible=True,
-            interactive=False
-        )
+            
+            # Data preview section
+            preview_section = gr.HTML(
+                value="",
+                visible=True,
+                elem_classes=["preview-section"]
+            )
     
-    # Chat Interface
-    gr.Markdown("### 💬 Chat with AI Agent")
-    gr.Markdown("Ask questions about specific equipment, accreditation capabilities, or get help with your equipment list.")
-    
-    chatbot = gr.Chatbot(
-        label="Chat History",
-        show_label=False,
-        container=True,
-        type="messages",
-        autoscroll=True,
-        elem_id="chatbot",
-    )
-    
-    msg = gr.Textbox(
-        label="Your Message",
-        placeholder="Type your message here...",
-        show_label=False
-    )
-    
-    with gr.Row():
-        submit_btn = gr.Button("Send", variant="primary", scale=1)
-        clear_btn = gr.Button("Clear", variant="secondary", scale=1)
-    
-    # Cache status display
+    # Cache status display below the main interface
     cache_status = gr.Textbox(
         value=get_cache_status(),
         label="System Status",
@@ -663,36 +774,84 @@ with gr.Blocks(
             logger.error(f"Error previewing equipment file: {e}")
             return "", f"❌ Error previewing file: {str(e)}"
     
-    # Function to handle equipment list processing
-    def process_equipment_file(file):
+    # Function to handle equipment list processing with progress tracking
+    def process_equipment_file(file, progress=gr.Progress()):
         if file is None:
             return None, "", "❌ Please select a file to upload."
         
         try:
             file_path = file.name
+            
+            # Start progress tracking
+            progress(0, desc="Starting file processing...")
+            
+            # Process the equipment list with progress updates
             result_file, status_message = process_equipment_list(file_path)
+            
+            # Update progress to 100% when complete
+            progress(1.0, desc="Processing complete!")
             
             if result_file:
                 # Add to cleanup list
                 add_temp_file(result_file)
                 
-                # Show download section and return the file
+                # Log the result file path for debugging
+                logger.info(f"Processing complete. Result file: {result_file}")
+                logger.info(f"File exists: {os.path.exists(result_file)}")
+                logger.info(f"File size: {os.path.getsize(result_file) if os.path.exists(result_file) else 'N/A'}")
+                
+                # Show download section with completion summary
                 download_html = """
                 ### 📥 Assessment Results Ready!
                 
                 Your equipment accreditation assessment is complete. Click the download button below to get your results.
                 
-                **Results Summary:**
-                - ✅ Processing completed successfully
-                - 📊 Equipment items analyzed
+                **Processing Summary:**
+                - ✅ Equipment items processed successfully
                 - 📄 Excel report generated
+                - ⚡ Processed with optimized performance
                 """
-                return result_file, download_html, status_message
+                
+                # Configure download button with the result file
+                # For Gradio 5.x, we need to return the file path and make button visible using gr.update()
+                
+                # Return the file path for the download button
+                # The gr.DownloadButton will use this file for downloads
+                # Ensure the file path is absolute for proper handling
+                abs_result_file = os.path.abspath(result_file)
+                logger.info(f"Absolute result file path: {abs_result_file}")
+                
+                # For Gradio to properly handle file downloads, we need to ensure the file is accessible
+                # and the path is properly formatted
+                if os.path.exists(abs_result_file):
+                    file_size = os.path.getsize(abs_result_file)
+                    logger.info(f"File ready for download: {abs_result_file} (size: {file_size} bytes)")
+                    
+                    # The gr.DownloadButton should automatically use this file for downloads
+                    # In Gradio 5.x, use gr.update() to make the button visible and set the file
+                    download_update = gr.update(
+                        visible=True,
+                        value=abs_result_file,
+                        label=f"📄 Download Assessment Results ({os.path.basename(abs_result_file)})"
+                    )
+                    return download_update, download_html, status_message
+                else:
+                    logger.error(f"File not found for download: {abs_result_file}")
+                    download_update = gr.update(visible=False)
+                    return download_update, download_html, "❌ Error: Result file not found"
             else:
-                return None, "", status_message
+                # No result file, keep download button hidden
+                download_update = gr.update(visible=False)
+                return download_update, "", status_message
+                
         except Exception as e:
-            logger.error(f"Error processing equipment file: {e}")
-            return None, "", f"❌ Error processing file: {str(e)}"
+            error_msg = f"❌ Error processing file: {str(e)}"
+            logger.error(error_msg)
+            # Keep download button hidden on error
+            download_update = gr.update(visible=False)
+            return download_update, "", error_msg
+    
+
     
     # Event handlers
     try:

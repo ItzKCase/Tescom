@@ -22,3 +22,6 @@ openpyxl
 aiohttp==3.9.1
 asyncio-throttle==1.0.2
 tenacity==8.2.3
+
+# Performance monitoring
+psutil==5.9.8

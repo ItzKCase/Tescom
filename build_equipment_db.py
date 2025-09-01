@@ -755,6 +755,55 @@ def _row_to_item(row: sqlite3.Row, confidence: float) -> Dict[str, Any]:
     }
 
 
+def _fts_make_safe_tokens(*texts: str) -> List[str]:
+    """Convert arbitrary input strings into FTS5-safe tokens.
+
+    - Removes punctuation that can break MATCH syntax (quotes, commas, colons, etc.)
+    - Splits on non-alphanumeric boundaries
+    - For model-like inputs, also adds a fused token with separators removed
+
+    Example: ("Spectro UV", "XRP-3000") -> ["Spectro", "UV", "XRP", "3000", "XRP3000"]
+    """
+    tokens: List[str] = []
+    for text in texts:
+        if not text:
+            continue
+        s = str(text).strip()
+        if not s:
+            continue
+        # Split into alphanumeric tokens only
+        parts = re.findall(r"[A-Za-z0-9]+", s)
+        tokens.extend(parts)
+
+        # Add a fused variant with ALL non-alphanumerics removed. This covers
+        # hyphens, underscores, spaces, slashes, quotes, commas, periods, etc.
+        fused = re.sub(r"[^A-Za-z0-9]+", "", s)
+        if fused and fused.upper() not in [t.upper() for t in tokens]:
+            tokens.append(fused)
+
+    # Deduplicate while preserving order
+    seen: set = set()
+    safe: List[str] = []
+    for t in tokens:
+        u = t.upper()
+        if u not in seen:
+            seen.add(u)
+            safe.append(u)
+    return safe
+
+
+def _build_fts_query(manufacturer_in: str, model_in: str) -> str:
+    """Create an FTS5 MATCH-safe query string.
+
+    We avoid FTS syntax errors by only using alphanumeric tokens and including
+    a fused model token for hyphenated models (e.g., XRP-3000 -> XRP3000).
+    The resulting query is a simple space-joined list of tokens which MATCH
+    interprets as an implicit AND.
+    """
+    tokens = _fts_make_safe_tokens(manufacturer_in, model_in)
+    return " ".join(tokens)
+
+
 def search_equipment(
     db_path: str,
     manufacturer_or_query: str = "",
@@ -839,13 +888,8 @@ def search_equipment(
                 return result
 
         # 3) FTS5 full-text search
-        query_text = manufacturer_in
-        if model_in:
-            if query_text:
-                query_text = f"{query_text} {model_in}"
-            else:
-                query_text = model_in
-        query_text = query_text.strip()
+        # Build an FTS-safe query that tolerates hyphenated models and punctuation
+        query_text = _build_fts_query(manufacturer_in, model_in)
 
         if query_text:
             cur.execute(
