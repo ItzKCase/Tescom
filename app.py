@@ -8,6 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
+from equipment_processor import process_equipment_list, get_data_preview, add_temp_file, cleanup_all_temp_files
 
 # Configure logging for the app
 logging.basicConfig(level=logging.INFO)
@@ -15,11 +16,31 @@ logger = logging.getLogger(__name__)
 
 # Register cleanup function to run on exit
 atexit.register(cleanup_resources)
+atexit.register(cleanup_all_temp_files)
 
 # Load environment variables
 load_dotenv()
 TESCOM_LOGO_URL = os.getenv("TESCOM_LOGO_URL", "")
 TESCOM_LOGO_PATH = os.getenv("TESCOM_LOGO_PATH", os.path.join(os.path.dirname(__file__), "assets", "tescom-logo.png"))
+
+# Check Gradio version for compatibility
+try:
+    import gradio as gr
+    gradio_version = gr.__version__
+    print(f"📦 Gradio version: {gradio_version}")
+    
+    # Check if we have access to newer components
+    has_box = hasattr(gr, 'Box')
+    has_column = hasattr(gr, 'Column')
+    
+    if not has_box:
+        print("⚠️  gr.Box not available, using gr.Column as fallback")
+    if not has_column:
+        print("⚠️  gr.Column not available, using basic layout")
+        
+except ImportError as e:
+    print(f"❌ Error importing Gradio: {e}")
+    raise
 
 def ensure_database_ready():
     """Ensure the equipment database is available before starting the app."""
@@ -399,6 +420,67 @@ with gr.Blocks(
             pointer-events: none;
         }
         
+        /* Equipment upload section styling */
+        .equipment-upload {
+            background: var(--bg-soft);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .equipment-upload h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: var(--tescom-navy);
+        }
+        
+        /* Preview section styling */
+        .preview-section {
+            background: var(--bg-soft);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-sm);
+            animation: fadeIn 0.5s ease-in-out;
+            min-height: 0;
+        }
+        
+        .preview-section:empty {
+            display: none;
+        }
+        
+        .preview-section h4 {
+            color: var(--tescom-navy);
+            margin-bottom: 16px;
+        }
+        
+        .preview-section table {
+            font-size: 0.875rem;
+        }
+        
+        /* Download section styling */
+        .download-section {
+            background: linear-gradient(135deg, #e6f7f6 0%, #f0fdfa 100%);
+            border: 2px solid var(--tescom-teal);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-md);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .download-section h3 {
+            color: var(--tescom-teal);
+            margin-bottom: 12px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .gradio-container {
@@ -407,7 +489,7 @@ with gr.Blocks(
             }
             
             #chatbot {
-                height: calc(100vh - 280px) !important;
+                height: calc(100vh - 440px) !important;
             }
             
             .brand-header h2 {
@@ -437,6 +519,94 @@ with gr.Blocks(
         gr.Markdown("""
         ## Tescom Capabilities Agent
         """)
+    
+    # Equipment List Upload Section
+    try:
+        # Try to use gr.Column for better layout
+        with gr.Column(elem_classes=["equipment-upload"]):
+            gr.Markdown("### 📋 Equipment List Accreditation Assessment")
+            gr.Markdown("Upload your equipment list (Excel or CSV) to get a comprehensive accreditation assessment. We'll analyze each item against our database and provide detailed results.")
+            
+            with gr.Row():
+                file_input = gr.File(
+                    label="Upload Equipment List",
+                    file_types=[".xlsx", ".csv"],
+                    file_count="single"
+                )
+            
+            with gr.Row():
+                preview_btn = gr.Button("👁️ Preview Data", variant="secondary", scale=1)
+                process_btn = gr.Button("🔍 Process Equipment List", variant="primary", scale=1)
+            
+            status_display = gr.Textbox(
+                label="Processing Status",
+                value="Ready to process equipment list. Please upload a file.",
+                interactive=False,
+                max_lines=3
+            )
+            
+            # Data preview section
+            preview_section = gr.HTML(
+                value="",
+                visible=True,
+                elem_classes=["preview-section"]
+            )
+            
+            # Download section - will be populated after processing
+            download_section = gr.Markdown(
+                value="",
+                visible=False,
+                elem_classes=["download-section"]
+            )
+            download_btn = gr.File(
+                label="📄 Download Assessment Results (Excel)", 
+                visible=True,
+                scale=1,
+                interactive=False
+            )
+    except AttributeError:
+        # Fallback to basic layout if gr.Column is not available
+        gr.Markdown("### 📋 Equipment List Accreditation Assessment")
+        gr.Markdown("Upload your equipment list (Excel or CSV) to get a comprehensive accreditation assessment. We'll analyze each item against our database and provide detailed results.")
+        
+        file_input = gr.File(
+            label="Upload Equipment List",
+            file_types=[".xlsx", ".csv"],
+            file_count="single"
+        )
+        
+        preview_btn = gr.Button("👁️ Preview Data", variant="secondary")
+        process_btn = gr.Button("🔍 Process Equipment List", variant="primary")
+        
+        status_display = gr.Textbox(
+            label="Processing Status",
+            value="Ready to process equipment list. Please upload a file.",
+            interactive=False,
+            max_lines=3
+        )
+        
+        # Data preview section
+        preview_section = gr.HTML(
+            value="",
+            visible=True,
+            elem_classes=["preview-section"]
+        )
+        
+        # Download section - will be populated after processing
+        download_section = gr.Markdown(
+            value="",
+            visible=False,
+            elem_classes=["download-section"]
+        )
+        download_btn = gr.File(
+            label="📄 Download Assessment Results (Excel)", 
+            visible=True,
+            interactive=False
+        )
+    
+    # Chat Interface
+    gr.Markdown("### 💬 Chat with AI Agent")
+    gr.Markdown("Ask questions about specific equipment, accreditation capabilities, or get help with your equipment list.")
     
     chatbot = gr.Chatbot(
         label="Chat History",
@@ -476,23 +646,86 @@ with gr.Blocks(
         status = get_cache_status()
         return history, msg, status
     
+    # Function to handle file preview
+    def preview_equipment_file(file):
+        if file is None:
+            return "", "❌ Please select a file to upload."
+        
+        try:
+            file_path = file.name
+            preview_html, error_message = get_data_preview(file_path)
+            
+            if preview_html:
+                return preview_html, "✅ File preview generated successfully. Review your data above, then click 'Process Equipment List' to continue."
+            else:
+                return "", error_message
+        except Exception as e:
+            logger.error(f"Error previewing equipment file: {e}")
+            return "", f"❌ Error previewing file: {str(e)}"
+    
+    # Function to handle equipment list processing
+    def process_equipment_file(file):
+        if file is None:
+            return None, "", "❌ Please select a file to upload."
+        
+        try:
+            file_path = file.name
+            result_file, status_message = process_equipment_list(file_path)
+            
+            if result_file:
+                # Add to cleanup list
+                add_temp_file(result_file)
+                
+                # Show download section and return the file
+                download_html = """
+                ### 📥 Assessment Results Ready!
+                
+                Your equipment accreditation assessment is complete. Click the download button below to get your results.
+                
+                **Results Summary:**
+                - ✅ Processing completed successfully
+                - 📊 Equipment items analyzed
+                - 📄 Excel report generated
+                """
+                return result_file, download_html, status_message
+            else:
+                return None, "", status_message
+        except Exception as e:
+            logger.error(f"Error processing equipment file: {e}")
+            return None, "", f"❌ Error processing file: {str(e)}"
+    
     # Event handlers
-    submit_btn.click(
-        chat_with_status_update,
-        inputs=[msg, chatbot],
-        outputs=[msg, chatbot, cache_status]
-    )
-    
-    msg.submit(
-        chat_with_status_update,
-        inputs=[msg, chatbot],
-        outputs=[msg, chatbot, cache_status]
-    )
-    
-    clear_btn.click(
-        clear_with_status_update,
-        outputs=[chatbot, msg, cache_status]
-    )
+    try:
+        preview_btn.click(
+            preview_equipment_file,
+            inputs=[file_input],
+            outputs=[preview_section, status_display]
+        )
+        
+        process_btn.click(
+            process_equipment_file,
+            inputs=[file_input],
+            outputs=[download_btn, download_section, status_display]
+        )
+        submit_btn.click(
+            chat_with_status_update,
+            inputs=[msg, chatbot],
+            outputs=[msg, chatbot, cache_status]
+        )
+        
+        msg.submit(
+            chat_with_status_update,
+            inputs=[msg, chatbot],
+            outputs=[msg, chatbot, cache_status]
+        )
+        
+        clear_btn.click(
+            clear_with_status_update,
+            outputs=[chatbot, msg, cache_status]
+        )
+    except Exception as e:
+        logger.error(f"Error setting up event handlers: {e}")
+        print(f"⚠️  Some event handlers may not work: {e}")
 
 if __name__ == "__main__":
     # Enable request queuing to avoid dropped/cancelled events for longer operations
