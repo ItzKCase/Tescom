@@ -10,6 +10,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from equipment_processor import (process_equipment_list, get_data_preview, add_temp_file, 
                                 cleanup_all_temp_files)
+import time
+import hashlib
 
 # Configure logging for the app
 logging.basicConfig(level=logging.INFO)
@@ -23,6 +25,9 @@ atexit.register(cleanup_all_temp_files)
 load_dotenv()
 TESCOM_LOGO_URL = os.getenv("TESCOM_LOGO_URL", "")
 TESCOM_LOGO_PATH = os.getenv("TESCOM_LOGO_PATH", os.path.join(os.path.dirname(__file__), "assets", "tescom-logo.png"))
+
+# Generate cache-busting version identifier
+CACHE_BUST_VERSION = hashlib.md5(str(time.time()).encode()).hexdigest()[:8]
 
 # Check Gradio version for compatibility
 try:
@@ -891,9 +896,15 @@ if __name__ == "__main__":
     # Note: On Gradio 5.x, queue() may not accept concurrency args; use defaults for compatibility.
     demo.queue()
     # Launch the app - Docker-friendly configuration
+    # Launch with Gradio's built-in server
     demo.launch(
         server_name=os.getenv("GRADIO_HOST", "0.0.0.0"),  # Allow external connections in Docker
         server_port=int(os.getenv("GRADIO_PORT", 7860)),
         share=False,
-        show_error=True
+        show_error=True,
+        # Add cache-busting to prevent browser caching issues
+        favicon_path=None,
+        ssl_verify=False,
+        # Enable auto-reload in development to help with caching issues
+        debug=os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
     )
